@@ -41,7 +41,8 @@
 #include "Score.h"
 #include "Button.h"
 #include "LED.h"
-#include "lightStrip.h"
+#include "LightStrip.h"
+#include "Sound.h"
 
 
 
@@ -54,16 +55,6 @@
 #define neopixelPin 12
 #define buzzerPin 9
 
-// configuration of the 
-bool longDelay = 1;
-
-// configuration of the team's color (for neopixels)
-uint32_t team0color = strip.Color(255, 0, 0);
-uint32_t team1color = strip.Color(0, 255, 0);
-
-// counter for the time the teams have had control of the point
-long team0controlTime = 0;
-long team1controlTime = 0;
 
 
 // instantiate class objects
@@ -79,12 +70,24 @@ XBee xbee = XBee();
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, neopixelPin, NEO_GRB + NEO_KHZ800);
 
-Score score = new Score();
-Button team0Button = new Button(0, button0Pin, button0LEDPin, score);
-Button team1Button = new Button(1, button1Pin, button1LEDPin, score);
-LED button0LED = new LED(button0LEDPin);
-LED button1LED = new LED(button1LEDPin);
-LightStrip lightStrip = new LightStrip(neopixelPin);
+Score score = Score();
+Button team0Button = Button(0, button0Pin, score);
+Button team1Button = Button(1, button1Pin, score);
+LED button0LED = LED(10);
+LED button1LED = LED(11);
+LightStrip lightStrip = LightStrip(neopixelPin);
+Sound sound = Sound(1000);
+
+
+// configuration of the team's color (for neopixels)
+uint32_t team0color = strip.Color(255, 0, 0);
+uint32_t team1color = strip.Color(0, 255, 0);
+
+
+// counter for the time the teams have had control of the point
+long team0controlTime = 0;
+long team1controlTime = 0;
+
 
 
 void setup() {
@@ -205,7 +208,7 @@ void testSequence() {
   delay(250);
 
   // blink the button LEDs
-  digitalWrite(button1LEDPin, HIGH);
+  digitalWrite(button0LEDPin, HIGH);
   digitalWrite(onboardLEDPin, HIGH);
   delay(250);
   digitalWrite(button1LEDPin, LOW);
@@ -213,10 +216,10 @@ void testSequence() {
 
   delay(250);
   
-  digitalWrite(button2LEDPin, HIGH);
+  digitalWrite(button0LEDPin, HIGH);
   digitalWrite(onboardLEDPin, HIGH);
   delay(250);
-  digitalWrite(button2LEDPin, LOW);
+  digitalWrite(button1LEDPin, LOW);
   digitalWrite(onboardLEDPin, LOW);
 
 

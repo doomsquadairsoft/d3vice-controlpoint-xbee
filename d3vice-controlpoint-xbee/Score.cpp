@@ -12,12 +12,12 @@ Score::Score()
   _team1Score = 0;
 }
 
-Score::update()
+void Score::update()
 {
-  :
+  
 }
 
-Score::setControllingTeam(bool teamNumber)
+void Score::setControllingTeam(bool teamNumber)
 {
   _controllingTeam = teamNumber;
 }
