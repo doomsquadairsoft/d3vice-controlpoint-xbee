@@ -14,12 +14,29 @@ Score::Score()
 
 void Score::update()
 {
-  
+  // If a team is controlling the point, increment their score
+  // @todo
 }
 
 void Score::setControllingTeam(bool teamNumber)
 {
   _controllingTeam = teamNumber;
+}
+
+bool Score::getControllingTeam()
+{
+  return _controllingTeam;
+}
+
+unsigned long Score::getLastButtonPressTime()
+{
+  return _lastButtonPressTime;
+}
+
+unsigned long Score::setLastButtonPressTime(unsigned long lastButtonPressTime)
+{
+  _lastButtonPressTime = lastButtonPressTime;
+  return _lastButtonPressTime;
 }
 
 

@@ -6,11 +6,12 @@
 #else
     #include "WProgram.h"
 #endif
+#include "Score.h"
 
 class Sound
 {
   public:
-    Sound(uint32_t duration);
+    Sound(uint32_t duration, Score& score);
     void update();
   private:
     uint32_t _duration;

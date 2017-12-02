@@ -13,10 +13,14 @@ class Score
     Score();
     void update();
     void setControllingTeam(bool teamNumber);
+    bool getControllingTeam();
+    long unsigned int getLastButtonPressTime();
+    long unsigned int setLastButtonPressTime(long unsigned int lastButtonPressTime);
   private:
     long _team0Score;
     long _team1Score;
     bool _controllingTeam;
+    long unsigned int _lastButtonPressTime;
 };
 
 

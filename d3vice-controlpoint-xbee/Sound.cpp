@@ -4,9 +4,10 @@
     #include "WProgram.h"
 #endif
 #include "Sound.h"
+#include "Score.h"
 
 
-Sound::Sound(uint32_t duration)
+Sound::Sound(uint32_t duration, Score& score)
 {
   _duration = duration;
 }

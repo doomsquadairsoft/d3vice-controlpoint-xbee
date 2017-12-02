@@ -73,10 +73,10 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, neopixelPin, NEO_GRB + NEO_KHZ80
 Score score = Score();
 Button team0Button = Button(0, button0Pin, score);
 Button team1Button = Button(1, button1Pin, score);
-LED button0LED = LED(10);
-LED button1LED = LED(11);
+LED button0LED = LED(0, 10, 250, score);
+LED button1LED = LED(1, 11, 250, score);
 LightStrip lightStrip = LightStrip(neopixelPin);
-Sound sound = Sound(1000);
+Sound sound = Sound(1000, score);
 
 
 // configuration of the team's color (for neopixels)

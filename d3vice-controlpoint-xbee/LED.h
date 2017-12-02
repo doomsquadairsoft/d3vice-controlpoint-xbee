@@ -6,14 +6,18 @@
 #else
     #include "WProgram.h"
 #endif
+#include "Score.h"
 
 class LED
 {
   public:
-    LED(uint8_t ledPin);
+    LED(bool teamNumber, uint8_t ledPin, unsigned long unitDuration, Score& score);
     void update();
   private:
+    bool _teamNumber;
     bool _ledPin;
+    unsigned long _unlitDuration;
+    Score& _score;
 };
 
 #endif

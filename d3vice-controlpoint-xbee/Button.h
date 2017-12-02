@@ -14,11 +14,12 @@ class Button
     Button(bool teamNumber, uint8_t buttonPin, Score& score);
     void update();
   private:
+    bool _isPressed;
+    bool _wasPressed;
     bool _teamNumber;
     uint8_t _buttonPin;
     Score& _score;
 };
 
-//extern Score;
 
 #endif
