@@ -11,10 +11,12 @@
 class Sound
 {
   public:
-    Sound(uint32_t duration, Score& score);
+    Sound(uint32_t duration, uint8_t buzzerPin, Score& score);
     void update();
   private:
     uint32_t _duration;
+    uint8_t _buzzerPin;
+    Score& _score;
 };
 
 

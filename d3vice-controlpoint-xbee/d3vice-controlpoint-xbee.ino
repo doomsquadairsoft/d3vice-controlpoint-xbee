@@ -73,10 +73,10 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, neopixelPin, NEO_GRB + NEO_KHZ80
 Score score = Score();
 Button team0Button = Button(0, button0Pin, score);
 Button team1Button = Button(1, button1Pin, score);
-LED button0LED = LED(0, 10, 250, score);
-LED button1LED = LED(1, 11, 250, score);
+LED button0LED = LED(0, button0LEDPin, 1000, score);
+LED button1LED = LED(1, button1LEDPin, 250, score);
 LightStrip lightStrip = LightStrip(neopixelPin, score);
-Sound sound = Sound(1000, score);
+Sound sound = Sound(250, buzzerPin, score);
 
 
 // configuration of the team's color (for neopixels)
@@ -211,12 +211,12 @@ void testSequence() {
   digitalWrite(button0LEDPin, HIGH);
   digitalWrite(onboardLEDPin, HIGH);
   delay(250);
-  digitalWrite(button1LEDPin, LOW);
+  digitalWrite(button0LEDPin, LOW);
   digitalWrite(onboardLEDPin, LOW);
 
   delay(250);
   
-  digitalWrite(button0LEDPin, HIGH);
+  digitalWrite(button1LEDPin, HIGH);
   digitalWrite(onboardLEDPin, HIGH);
   delay(250);
   digitalWrite(button1LEDPin, LOW);
