@@ -75,7 +75,7 @@ Button team0Button = Button(0, button0Pin, score);
 Button team1Button = Button(1, button1Pin, score);
 LED button0LED = LED(0, 10, 250, score);
 LED button1LED = LED(1, 11, 250, score);
-LightStrip lightStrip = LightStrip(neopixelPin);
+LightStrip lightStrip = LightStrip(neopixelPin, score);
 Sound sound = Sound(1000, score);
 
 

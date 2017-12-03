@@ -4,9 +4,10 @@
     #include "WProgram.h"
 #endif
 #include "LightStrip.h"
+#include "Score.h"
 
 
-LightStrip::LightStrip(uint8_t lightStripPin)
+LightStrip::LightStrip(uint8_t lightStripPin, Score& score)
 {
   _lightStripPin = lightStripPin;
 }

@@ -16,6 +16,7 @@ class LED
   private:
     bool _teamNumber;
     bool _ledPin;
+    unsigned long _unlitTime;
     unsigned long _unlitDuration;
     Score& _score;
 };
