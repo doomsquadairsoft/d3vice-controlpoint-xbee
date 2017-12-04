@@ -7,11 +7,15 @@
 #include "Score.h"
 
 
-LED::LED(bool teamNumber, uint8_t ledPin, unsigned long unlitDuration, Score& score)
+LED::LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score& score) :
+  _score(score)
 {
+  pinMode(ledPin, OUTPUT);
   _ledPin = ledPin;
   _teamNumber = teamNumber;
-  _unlitDuration = unlitDuration;
+  _duration = duration;
+  _isLEDOn = 0;
+  _unlitTime = 0;
 }
 
 /**
@@ -21,21 +25,38 @@ LED::LED(bool teamNumber, uint8_t ledPin, unsigned long unlitDuration, Score& sc
  */
 void LED::update() {
   
-  // If a button press for this LED's team has recently happened within the last _unlitDuration milliseconds,
-  // turn off the led
-  if (_score.getControllingTeam() == _teamNumber) {
-    if (digitalRead(_ledPin)) {
-      if (_score.getLastButtonPressTime() >= (millis() - _unlitDuration)) {
-        _unlitTime = millis(); // set a timestamp for when this LED turned off
+  // if the button has never been pressed since d3vice start,
+  //   turn on the LED
+  if (_unlitTime == 0) {
+    if (!_isLEDOn) {
+      _isLEDOn = 1;
+      digitalWrite(_ledPin, HIGH);
+    }
+  }
+
+
+
+  // if the button was pressed within the last _duration milliseconds,
+  //   turn off the LED
+  if (millis() < _score.getLastButtonPressTime() + _duration) {
+    if (_score.getControllingTeam() == _teamNumber) {
+      if (_isLEDOn) {
+        _unlitTime = millis(); // save the timestamp at which the LED turned off
+        _isLEDOn = 0;
         digitalWrite(_ledPin, LOW);
       }
     }
   }
 
-  // if the _unlitDuration for this LED has elapsed since _unlitTime, turn on the LED.
-  if (!digitalRead(_ledPin)) {
-    if (millis() > _unlitTime + _unlitDuration) {
+  // if the button has not been pressed within the last _duration milliseconds,
+  //   turn on the LED
+  else if (millis() > _unlitTime + _duration) {
+    if (!_isLEDOn) {
+      _isLEDOn = 1;
       digitalWrite(_ledPin, HIGH);
     }
   }
+  
+
+  
 }

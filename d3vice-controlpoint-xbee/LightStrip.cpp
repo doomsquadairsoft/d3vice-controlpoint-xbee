@@ -7,7 +7,8 @@
 #include "Score.h"
 
 
-LightStrip::LightStrip(uint8_t lightStripPin, Score& score)
+LightStrip::LightStrip(uint8_t lightStripPin, Score& score) :
+  _score(score)
 {
   _lightStripPin = lightStripPin;
 }
