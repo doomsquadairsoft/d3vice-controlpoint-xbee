@@ -17,6 +17,7 @@ class LightStrip
     void update();
   private:
     void _animate();
+    uint8_t _pulsate(uint8_t breathState);
     Adafruit_NeoPixel& _neoPixelStrip;
     Score& _score;
     bool _isStarted;

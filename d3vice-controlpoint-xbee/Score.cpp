@@ -39,4 +39,13 @@ unsigned long Score::setLastButtonPressTime(unsigned long lastButtonPressTime)
   return _lastButtonPressTime;
 }
 
+long Score::getTeamScore(bool teamNumber)
+{
+  if (!teamNumber) {
+    return _team0Score;
+  }
+  else {
+    return _team1Score;
+  }
+}
 
