@@ -18,7 +18,7 @@ void Sound::update()
 {
   // If a button press happened less than _duration ms ago,
   //   start buzzing
-  if (millis() <= _score.getLastButtonPressTime() + _duration) {
+  if (millis() - _score.getLastButtonPressTime() < _duration) {
     if (!digitalRead(_buzzerPin)) {
       digitalWrite(_buzzerPin, HIGH);
     }

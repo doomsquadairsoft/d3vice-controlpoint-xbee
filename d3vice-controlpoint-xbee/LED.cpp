@@ -38,7 +38,7 @@ void LED::update() {
 
   // if the button was pressed within the last _duration milliseconds,
   //   turn off the LED
-  if (millis() < _score.getLastButtonPressTime() + _duration) {
+  if (millis() - _score.getLastButtonPressTime() < _duration) {
     if (_score.getControllingTeam() == _teamNumber) {
       if (_isLEDOn) {
         _unlitTime = millis(); // save the timestamp at which the LED turned off
@@ -50,7 +50,7 @@ void LED::update() {
 
   // if the button has not been pressed within the last _duration milliseconds,
   //   turn on the LED
-  else if (millis() > _unlitTime + _duration) {
+  else if (millis() - _unlitTime > _duration) {
     if (!_isLEDOn) {
       _isLEDOn = 1;
       digitalWrite(_ledPin, HIGH);

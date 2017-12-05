@@ -6,18 +6,24 @@
 #else
     #include "WProgram.h"
 #endif
+#include <Adafruit_NeoPixel.h>
 #include "Score.h"
-
 
 
 class LightStrip
 {
   public:
-    LightStrip(uint8_t lightStripPin, Score& score);
+    LightStrip(Adafruit_NeoPixel& neoPixel, Score& score);
     void update();
   private:
-    uint8_t _lightStripPin;
+    void _animate();
+    Adafruit_NeoPixel& _neoPixelStrip;
     Score& _score;
+    bool _isStarted;
+    bool _isInhale;
+    uint8_t _breathState;
+    uint8_t _animationState;
+    float _sinIn;
 };
 
 #endif
