@@ -4,10 +4,10 @@
     #include "WProgram.h"
 #endif
 #include "Button.h"
-#include "Score.h"
+#include "Event.h"
 
-Button::Button(bool teamNumber, uint8_t buttonPin, Score& score) :
-  _score(score)
+Button::Button(bool teamNumber, uint8_t buttonPin, Event& event) :
+  _event(event)
 {
   pinMode(buttonPin, INPUT);
   _teamNumber = teamNumber;
@@ -28,13 +28,14 @@ void Button::update() {
   // if the button was not pressed last tick, but is pressed this tick, process press.
   else if (digitalRead(_buttonPin) && !_wasPressed) {
     // do the action that the button should perform.
-    _score.setControllingTeam(_teamNumber);
-    _score.setLastButtonPressTime(millis());
+    _event.registerPressEvent(_teamNumber);
   }
 
   // if the button is not pressed this tick, but was pressed last tick, process release.
   else if (!digitalRead(_buttonPin) && _wasPressed) {
     _wasPressed = 0;
+    _event.registerReleaseEvent(_teamNumber);
   }
 }
+
 

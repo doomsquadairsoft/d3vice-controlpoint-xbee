@@ -43,6 +43,7 @@
 #include "LED.h"
 #include "LightStrip.h"
 #include "Sound.h"
+#include "Domination.h"
 
 
 
@@ -70,9 +71,11 @@ XBee xbee = XBee();
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, neopixelPin, NEO_GRB + NEO_KHZ800);
 
+Event event = Event();
 Score score = Score();
-Button team0Button = Button(0, button0Pin, score);
-Button team1Button = Button(1, button1Pin, score);
+Domination game = Domination(event, score);
+Button team0Button = Button(0, button0Pin, event);
+Button team1Button = Button(1, button1Pin, event);
 LED button0LED = LED(0, button0LEDPin, 50, score);
 LED button1LED = LED(1, button1LEDPin, 50, score);
 LightStrip lightStrip = LightStrip(strip, score);
@@ -107,9 +110,12 @@ void loop() {
 
   
   // If either team has pressed their button,
-  // change the controlling team in the score.
+  // register the appropriate event.
   team0Button.update();
   team1Button.update();
+
+  event.update();
+  
 
   // Update the LEDs based on button presses
   // and the controlling team

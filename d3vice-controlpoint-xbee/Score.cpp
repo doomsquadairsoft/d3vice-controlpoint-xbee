@@ -10,12 +10,25 @@ Score::Score()
 {
   _team0Score = 0;
   _team1Score = 0;
+  _isGameInPlay = 0;
 }
 
 void Score::update()
 {
+  // If a capture event has been recorded, 
+  
   // If a team is controlling the point, increment their score
   // @todo
+}
+
+void Score::pause()
+{
+  if (_isGameInPlay == 1) _isGameInPlay = 0;
+}
+
+void Score::unPause()
+{
+  if (_isGameInPlay == 0) _isGameInPlay = 1;
 }
 
 void Score::setControllingTeam(bool teamNumber)
@@ -49,3 +62,9 @@ long Score::getTeamScore(bool teamNumber)
   }
 }
 
+void Score::processCaptureEvent(bool teamNumber)
+{
+   unPause();
+   setControllingTeam(teamNumber);
+   setLastButtonPressTime(millis());
+}
