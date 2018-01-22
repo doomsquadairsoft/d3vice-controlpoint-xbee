@@ -1,6 +1,17 @@
 # d3vice-controlpoint-xbee
 Arduino Fio / XBee based D3VICE control point for Airsoft games
 
+## Development setup process
+
+  * Download, Install, Open Arduino IDE >=1.8.5 from https://arduino.cc/
+  * Set board in `Tools > Board(...) > Arduino Fio`
+  * Install contributed libraries `Sketch > Include Libraries > Manage Libraries`
+    * Adafruit NeoPixel library
+    * XBee-Arduino library
+  * Add your user account to tty and dialout groups (May or may not be required for your OS)
+    * `sudo usermod -aG tty dialout <YOUR_USERNAME_HERE>`
+
+
 
 ## Enclosure Ideas
 

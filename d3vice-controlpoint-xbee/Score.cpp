@@ -68,3 +68,9 @@ void Score::processCaptureEvent(bool teamNumber)
    setControllingTeam(teamNumber);
    setLastButtonPressTime(millis());
 }
+
+void Score::increment(bool teamNumber, unsigned long duration)
+{
+    
+}
+

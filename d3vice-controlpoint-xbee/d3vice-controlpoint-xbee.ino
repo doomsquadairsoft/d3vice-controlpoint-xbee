@@ -34,7 +34,7 @@
 
 // Contributed libraries
 #include <Adafruit_NeoPixel.h>
-#include <Printers.h>
+//#include <Printers.h>
 #include <XBee.h>
 
 // DooM Squad libraries
@@ -71,11 +71,10 @@ XBee xbee = XBee();
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, neopixelPin, NEO_GRB + NEO_KHZ800);
 
-Event event = Event();
 Score score = Score();
-Domination game = Domination(event, score);
-Button team0Button = Button(0, button0Pin, event);
-Button team1Button = Button(1, button1Pin, event);
+Domination game = Domination(score);
+Button team0Button = Button(0, button0Pin, score);
+Button team1Button = Button(1, button1Pin, score);
 LED button0LED = LED(0, button0LEDPin, 50, score);
 LED button1LED = LED(1, button1LEDPin, 50, score);
 LightStrip lightStrip = LightStrip(strip, score);
@@ -95,10 +94,14 @@ long team1controlTime = 0;
 
 void setup() {
   pinMode(onboardLEDPin, OUTPUT);
+  pinMode(button0LEDPin, OUTPUT);
+  pinMode(button1LEDPin, OUTPUT);
   pinMode(buzzerPin, OUTPUT);
   pinMode(neopixelPin, OUTPUT);
+  
   Serial.begin(57600);
   xbee.setSerial(Serial);
+  
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 
@@ -110,11 +113,9 @@ void loop() {
 
   
   // If either team has pressed their button,
-  // register the appropriate event.
+  // register the appropriate event. (press/release)
   team0Button.update();
   team1Button.update();
-
-  event.update();
   
 
   // Update the LEDs based on button presses
@@ -143,60 +144,6 @@ void loop() {
   
 }
 
-void detectButtonState(bool team) {
-  // detect if team n's button is pressed
-
-  // if team n's button is pressed,
-  //   return true
-}
-
-void processButtonPress(bool teamNumber) {
-  // set controlling team to teamNumber
-}
-
-void processBeeps(long buttonLastPressTime) { 
-  // if buttonLastPressTime happened in the last 1 second
-  //   if we are not beeping already
-  //     start beeping
-  // otherwise
-  //   if we are beeping
-  //     stop beeping
-}
-
-void processLights(long buttonLastPressTime, bool teamNumber) {
-  // if buttonLastPressTime 
-}
-  
-  //   turn button teamNumber LED off
-  //   change neopixel colour to team teamNumber's colour
-  //   start beeping
-  //   wait 1 second
-  //   turn button teamNumber LED on
-  //   stop beeping
-
-
-void buttonPress(bool team) {
-
-  
-//  digitalWrite(onboardLEDPin, HIGH);
-//  digitalWrite(button1LEDPin, HIGH);
-//  digitalWrite(button2LEDPin, LOW);
-//  if (longDelay) {
-//    delay(2000);
-//  } else {
-//    delay(250);
-//  }
-//  digitalWrite(onboardLEDPin, LOW);
-//  digitalWrite(button1LEDPin, LOW);
-//  digitalWrite(button2LEDPin, HIGH);
-//  if (longDelay) {
-//    delay(2000);
-//  } else {
-//    delay(250);
-//  }
-
-
-}
 
 
 void testSequence() {

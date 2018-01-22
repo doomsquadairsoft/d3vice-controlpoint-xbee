@@ -4,7 +4,6 @@
     #include "WProgram.h"
 #endif
 #include "Domination.h"
-#include "Event.h"
 #include "Score.h"
 
 
@@ -13,18 +12,15 @@
  * 
  * This class's job is to increment scores according to event inputs, and determine a winner
  */
-Domination::Domination(Event& event, Score& score, Time& t) :
-  _event(event), _score(score), _time(t)
+Domination::Domination(Score& score) :
+  _score(score)
 {
-  _event = event;
   _score = score;
-  _time = t;
-  _lastTickTime = 0;
 }
 
 void Domination::update() {
   // Calculate the duration since last tick
-  unsigned long tickTime = _time.millis() - ;
+  unsigned long tickTime = millis();
   
   
   // If team 1's button is pressed,
@@ -33,11 +29,8 @@ void Domination::update() {
   // Else if team 2's button is pressed,
   //   set team 2 as being in control of the point
   
-  if (_event.isPressed(0)) {
+  if (_score.getControllingTeam() == 0) {
     _score.setControllingTeam(0);
-  }
-  else if (_event.isPressed(1)) {
-    _score.setControllingTeam(1);
   }
   else {
     
@@ -48,7 +41,7 @@ void Domination::update() {
     //   increment team 2's timer by the amount of time elapsed since last tick
 
     if (_score.getControllingTeam() == 0) {
-      _score.increment(0, tickTime
+      _score.increment(0, tickTime);
     }
   }
   
@@ -61,8 +54,6 @@ void Domination::update() {
   //   team 2 wins
   
   
-  if (_event.isPressed) {
 
-  }
 }
 

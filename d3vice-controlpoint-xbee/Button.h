@@ -6,19 +6,19 @@
 #else
     #include "WProgram.h"
 #endif
-#include "Event.h"
+#include "Score.h"
 
 class Button
 {
   public:
-    Button(bool teamNumber, uint8_t buttonPin, Event& event);
+    Button(bool teamNumber, uint8_t buttonPin, Score& score);
     void update();
   private:
     bool _isPressed;
     bool _wasPressed;
     bool _teamNumber;
     uint8_t _buttonPin;
-    Event& _event;
+    Score& _score;
 };
 
 
