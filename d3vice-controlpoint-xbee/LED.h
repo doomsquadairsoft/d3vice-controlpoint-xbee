@@ -7,11 +7,12 @@
     #include "WProgram.h"
 #endif
 #include "Score.h"
+#include "Phase.h"
 
 class LED
 {
   public:
-    LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score& score);
+    LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score& score, Phase& phase);
     void update();
   private:
     bool _teamNumber;
@@ -20,6 +21,7 @@ class LED
     unsigned long _unlitTime;
     unsigned long _duration;
     Score& _score;
+    Phase& _phase;
 };
 
 #endif

@@ -6,10 +6,11 @@
 #include "LightStrip.h"
 #include <Adafruit_NeoPixel.h>
 #include "Score.h"
+#include "Phase.h"
 
 
-LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score& score) :
-  _score(score), _neoPixelStrip(neoPixelStrip)
+LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score& score, Phase& phase) :
+  _score(score), _neoPixelStrip(neoPixelStrip), _phase(phase)
 {
   _neoPixelStrip = neoPixelStrip;
   _isStarted = 0;

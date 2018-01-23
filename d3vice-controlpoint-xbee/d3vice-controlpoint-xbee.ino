@@ -44,6 +44,7 @@
 #include "LightStrip.h"
 #include "Sound.h"
 #include "Domination.h"
+#include "Phase.h"
 
 
 
@@ -72,13 +73,15 @@ XBee xbee = XBee();
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, neopixelPin, NEO_GRB + NEO_KHZ800);
 
 Score score = Score();
+Phase phase = Phase();
 Domination game = Domination(score);
-Button team0Button = Button(0, button0Pin, score);
-Button team1Button = Button(1, button1Pin, score);
-LED button0LED = LED(0, button0LEDPin, 50, score);
-LED button1LED = LED(1, button1LEDPin, 50, score);
-LightStrip lightStrip = LightStrip(strip, score);
-Sound sound = Sound(100, buzzerPin, score);
+Button team0Button = Button(0, button0Pin, score, phase);
+Button team1Button = Button(1, button1Pin, score, phase);
+LED button0LED = LED(0, button0LEDPin, 50, score, phase);
+LED button1LED = LED(1, button1LEDPin, 50, score, phase);
+LightStrip lightStrip = LightStrip(strip, score, phase);
+Sound sound = Sound(100, buzzerPin, score, phase);
+
 
 
 // configuration of the team's color (for neopixels)

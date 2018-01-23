@@ -5,10 +5,11 @@
 #endif
 #include "LED.h"
 #include "Score.h"
+#include "Phase.h"
 
 
-LED::LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score& score) :
-  _score(score)
+LED::LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score& score, Phase& phase) :
+  _score(score), _phase(phase)
 {
   pinMode(ledPin, OUTPUT);
   _ledPin = ledPin;

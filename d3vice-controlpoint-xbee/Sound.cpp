@@ -5,10 +5,11 @@
 #endif
 #include "Sound.h"
 #include "Score.h"
+#include "Phase.h"
 
 
-Sound::Sound(uint32_t duration, uint8_t buzzerPin, Score& score) :
-  _score(score)
+Sound::Sound(uint32_t duration, uint8_t buzzerPin, Score& score, Phase& phase) :
+  _score(score), _phase(phase)
 {
   _duration = duration;
   _buzzerPin = buzzerPin;

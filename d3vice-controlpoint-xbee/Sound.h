@@ -7,16 +7,18 @@
     #include "WProgram.h"
 #endif
 #include "Score.h"
+#include "Phase.h"
 
 class Sound
 {
   public:
-    Sound(uint32_t duration, uint8_t buzzerPin, Score& score);
+    Sound(uint32_t duration, uint8_t buzzerPin, Score& score, Phase& phase);
     void update();
   private:
     uint32_t _duration;
     uint8_t _buzzerPin;
     Score& _score;
+    Phase& _phase;
 };
 
 
