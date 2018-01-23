@@ -91,8 +91,13 @@ long team0controlTime = 0;
 long team1controlTime = 0;
 
 
+// Whether or not game is deriving initial state from XBee network
+bool isNetworkGame;
+
+
 
 void setup() {
+ 
   pinMode(onboardLEDPin, OUTPUT);
   pinMode(button0LEDPin, OUTPUT);
   pinMode(button1LEDPin, OUTPUT);
@@ -105,11 +110,61 @@ void setup() {
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 
+  // run a test sequence which the user can observe to verify that all the 
+  // lights and sounds are functioning properly.
   testSequence();
+
+  // @TODO 
+  //   check the XBee network to determine if there is a running game already.
+  isNetworkGame = 0;
+
+  // if there is no game server on the XBee network, switch to autistic mode.
+  // (standalone mode, no wireless connection active)
+  if (isNetworkGame) {
+    // @TODO
+    //   Sync with the networked game state, then begin loop()
+  }
+  else {
+    // @TODO
+    //   enter autistic mode (standalone, no wireless connections active)
+    
+    // begin operation, starting with programming phase.
+    loop();
+  }
+
+  
 }
 
-
+/** 
+ *  
+ * Main loop. One pass through the loop is called a "tick"
+ * 
+ * PHASES
+ *   * Phases are a combination of preparatory programming steps, and game modes.
+ *   * Phases determine how the discreet classes (Button.cpp, Domination.cpp, LED.cpp)
+ *     react to changes in game state.
+ *   
+ *   Phase 0-- Test phase
+ *     A test sequence runs, lighting up every LED and testing the buzzer.
+ *     Allows user to verify that all LED & sound hardware is functioning properly. 
+ *     
+ *   Phase 1-- Hello phase. 
+ *     D3VICE network syncronization. D3VICE finds an existing game on the XBee network
+ *     if one exists. If no game is found, D3VICE switches to standalone mode and enters programming phase.
+ *   
+ *   Phase 2-- Programming > Game mode
+ *     D3VICE buttons act as input for choosing the game mode
+ *     
+ *   Phase 3-- Programming > Domination > duration
+ *     D3VICE buttons act as input for choosing the total accumulated time a team needs to control the point to win
+ *     
+ *   Phase 4-- Domination > Run
+ *   Phase 5-- Domination > Pause
+ *   Phase 6-- Domination > Win
+ *   
+ */
 void loop() {
+
 
   
   // If either team has pressed their button,
@@ -207,4 +262,3 @@ void pixelsOff() {
     strip.show();
   }
 }
-
