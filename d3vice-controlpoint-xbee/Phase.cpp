@@ -8,11 +8,13 @@
 
 Phase::Phase()
 {
-  uint8_t _phase = 0;
+  _phase = 0;
+  _isSwitchedLastTick = 0;
 }
 
 uint8_t Phase::advance()
 {
+  _isSwitchedLastTick = 1;
   return _phase = _phase + 1;
 }
 
@@ -20,5 +22,10 @@ uint8_t Phase::advance()
 uint8_t Phase::getCurrentPhase()
 {
   return _phase;
+}
+
+bool Phase::getWasSwitchedLastTick()
+{
+  return _isSwitchedLastTick;
 }
 

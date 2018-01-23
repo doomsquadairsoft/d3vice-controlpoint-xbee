@@ -17,8 +17,10 @@ class Phase
     Phase();
     uint8_t advance();
     uint8_t getCurrentPhase();
+    bool getWasSwitchedLastTick();
   private:
     uint8_t _phase;
+    bool _isSwitchedLastTick;
 };
 
 #endif
