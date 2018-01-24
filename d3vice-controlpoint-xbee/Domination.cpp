@@ -17,7 +17,7 @@ Domination::Domination(Score& score)
   _score = score;
 }
 
-Score& Domination::_score = _score;
+Score & Domination::_score = _score;
 
 
 void Domination::update() {

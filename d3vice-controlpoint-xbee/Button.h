@@ -13,7 +13,7 @@
 class Button
 {
   public:
-    Button(bool teamNumber, uint8_t buttonPin, Controller& controller);
+    Button(bool teamNumber, uint8_t buttonPin, Controller* controller);
     void update();
     void processPress();
     void processRelease();
@@ -22,7 +22,7 @@ class Button
     bool _wasPressed;
     bool _teamNumber;
     uint8_t _buttonPin;
-    static Controller& _controller;
+    Controller* _controller;
 };
 
 

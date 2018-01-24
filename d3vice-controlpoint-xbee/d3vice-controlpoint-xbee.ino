@@ -76,14 +76,14 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, neopixelPin, NEO_GRB + NEO_KHZ80
 Score score = Score();
 Phase phase = Phase();
 Domination game = Domination(score);
-Controller controller = Controller(score, phase);
-
-Button team0Button = Button(0, button0Pin, controller);
-Button team1Button = Button(1, button1Pin, controller);
-LED button0LED = LED(0, button0LEDPin, 50, score, phase);
-LED button1LED = LED(1, button1LEDPin, 50, score, phase);
-LightStrip lightStrip = LightStrip(strip, score, phase);
-Sound sound = Sound(100, buzzerPin, score, phase);
+Controller controller = Controller(&score, &phase);
+//
+Button team0Button = Button(0, button0Pin, &controller);
+Button team1Button = Button(1, button1Pin, &controller);
+LED button0LED = LED(0, button0LEDPin, 50, &score, &phase);
+LED button1LED = LED(1, button1LEDPin, 50, &score, &phase);
+LightStrip lightStrip = LightStrip(strip, &score, &phase);
+Sound sound = Sound(100, buzzerPin, &score, &phase);
 
 
 
@@ -97,12 +97,13 @@ long team0controlTime = 0;
 long team1controlTime = 0;
 
 
-// Whether or not game is deriving initial state from XBee network
+// variable for showing whether or not game is deriving initial state from XBee network
 bool isNetworkGame;
 
 
 
 void setup() {
+
  
   pinMode(onboardLEDPin, OUTPUT);
   pinMode(button0LEDPin, OUTPUT);
@@ -135,7 +136,7 @@ void setup() {
     //   enter autistic mode (standalone, no wireless connections active)
     
     // begin operation, starting with programming phase.
-    loop();
+    return;
   }
 
   

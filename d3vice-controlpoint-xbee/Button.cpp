@@ -7,11 +7,12 @@
 #include "Score.h"
 #include "Phase.h"
 
-Button::Button(bool teamNumber, uint8_t buttonPin, Controller& controller)
+Button::Button(bool teamNumber, uint8_t buttonPin, Controller* controller)
 {
   pinMode(buttonPin, INPUT);
   _teamNumber = teamNumber;
   _buttonPin = buttonPin;
+  _controller = controller;
 }
 
 /**
@@ -46,7 +47,7 @@ void Button::processPress() {
    * Phase 0-- test phase. Button should do nothing when pressed
    * Phase 1-- Hello phase. Button should do nothing when pressed
    */
-  if (_controller.getCurrentPhase() == 0 || _controller.getCurrentPhase() == 1) {
+  if (_controller->getCurrentPhase() == 0 || _controller->getCurrentPhase() == 1) {
     return;
   }
 
@@ -57,14 +58,14 @@ void Button::processPress() {
    *   Red button cycles through game modes.
    *   Green button selects game mode.
    */
-  else if (_controller.getCurrentPhase() == 2) {
+  else if (_controller->getCurrentPhase() == 2) {
 
     // Red button cycles through game modes
     if (_teamNumber == 0) {
       // @TODO
     }
     else if (_teamNumber == 1) {
-      _controller.advancePhase();
+      _controller->advancePhase();
     }
   }
 
@@ -75,7 +76,7 @@ void Button::processPress() {
    *   Green button increments the time by 1 minute (up to a maximum of 595 hours)
    *   Red button decrements the time by 1 minute (down to a minimum of 1 second)
    */
-  else if (_controller.getCurrentPhase() == 3) {
+  else if (_controller->getCurrentPhase() == 3) {
     
   }
 
@@ -87,9 +88,9 @@ void Button::processPress() {
    *   Green button sets team 1 as controlling
    *   Button should set _wasPressed to TRUE, set controlling team in _score, and timestamp now as the button's last press time.
    */
-  else if (_controller.getCurrentPhase() == 4) {
+  else if (_controller->getCurrentPhase() == 4) {
     _wasPressed = 1;
-    _controller.triggerButtonPress(_teamNumber);
+    _controller->triggerButtonPress(_teamNumber);
   }
 
 
@@ -101,7 +102,7 @@ void Button::processPress() {
    *   Green button should not respond to presses or releases.
    *   Red and green buttons simultaneously pressed & held for 5 seconds should resume game (switch to Phase 4)
    */
-  else if (_controller.getCurrentPhase() == 5) {
+  else if (_controller->getCurrentPhase() == 5) {
     // @todo
   }
     
@@ -114,7 +115,7 @@ void Button::processPress() {
    *     * reset game scores
    *     * Go to phase 2
    */
-   else if (_controller.getCurrentPhase() == 6) {
+   else if (_controller->getCurrentPhase() == 6) {
      // @todo
    }
 

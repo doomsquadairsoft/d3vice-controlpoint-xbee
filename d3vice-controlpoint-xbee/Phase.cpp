@@ -9,7 +9,7 @@
 Phase::Phase()
 {
   _phase = 0;
-  _isSwitchedLastTick = 0;
+  _isSwitchedLastTick = 1;
 }
 
 uint8_t Phase::advance()

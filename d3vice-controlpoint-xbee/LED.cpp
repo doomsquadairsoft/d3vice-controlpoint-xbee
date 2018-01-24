@@ -7,7 +7,7 @@
 #include "Controller.h"
 
 
-LED::LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score& score, Phase& phase)
+LED::LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score* score, Phase* phase)
 {
   pinMode(ledPin, OUTPUT);
   _ledPin = ledPin;
@@ -19,8 +19,8 @@ LED::LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score& score, 
   _phase = phase;
 }
 
-Score& LED::_score = _score;
-Phase& LED::_phase = _phase;
+//Score & LED::_score = _score;
+//Phase & LED::_phase = _phase;
 
 
 /**
@@ -43,8 +43,8 @@ void LED::update() {
 
   // if the button was pressed within the last _duration milliseconds,
   //   turn off the LED
-  if (millis() - _score.getLastButtonPressTime() < _duration) {
-    if (_score.getControllingTeam() == _teamNumber) {
+  if (millis() - _score->getLastButtonPressTime() < _duration) {
+    if (_score->getControllingTeam() == _teamNumber) {
       if (_isLEDOn) {
         _unlitTime = millis(); // save the timestamp at which the LED turned off
         _isLEDOn = 0;

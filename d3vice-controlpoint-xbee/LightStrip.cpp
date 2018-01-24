@@ -9,7 +9,7 @@
 #include "Phase.h"
 
 
-LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score& score, Phase& phase) :
+LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score* score, Phase* phase) :
   _neoPixelStrip(neoPixelStrip)
 {
   _neoPixelStrip = neoPixelStrip;
@@ -20,10 +20,6 @@ LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score& score, Phase& ph
   _animationState = 0;
 }
 
-Score& LightStrip::_score = _score;
-Phase& LightStrip::_phase = _phase;
-
-
 void LightStrip::update()
 {
   // if the light strip has never been updated post-testSequence(),
@@ -33,14 +29,14 @@ void LightStrip::update()
 //    _animationState = 1;
 //  }
 
-  if (_score.getLastButtonPressTime()) {
+  if (_score->getLastButtonPressTime()) {
     // if team 0 is in control
     //   if team 0 hasn't captured the point within the last 5 seconds,
     //     switch to animation 2
     //   else if team 0 captured the point within the last 5 seconds,
     //     switch to animation 1
-    if (!_score.getControllingTeam()) {
-      if (millis() - _score.getLastButtonPressTime() > 5000) {
+    if (!_score->getControllingTeam()) {
+      if (millis() - _score->getLastButtonPressTime() > 5000) {
         _animationState = 2;
       }
       else {
@@ -54,7 +50,7 @@ void LightStrip::update()
     //   else if team 1 captured the point within the last 5 seconds,
     //     switch to animation 3
     else {
-      if (millis() - _score.getLastButtonPressTime() > 5000) {
+      if (millis() - _score->getLastButtonPressTime() > 5000) {
         _animationState = 4;
       }
       else {

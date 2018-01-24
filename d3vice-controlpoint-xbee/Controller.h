@@ -18,13 +18,13 @@
 class Controller
 {
   public:
-    Controller(Score& score, Phase& phase);
+    Controller(Score* score, Phase* phase);
     void advancePhase();
     void triggerButtonPress(bool buttonNumber);
     uint8_t getCurrentPhase();
   private:
-    static Score& _score;
-    static Phase& _phase;
+    Score* _score;
+    Phase* _phase;
 };
 
 #endif
