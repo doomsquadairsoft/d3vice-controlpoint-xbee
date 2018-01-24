@@ -9,7 +9,7 @@ Arduino Fio / XBee based D3VICE control point for Airsoft games
     * Adafruit NeoPixel library
     * XBee-Arduino library
   * Add your user account to tty and dialout groups (May or may not be required for your OS)
-    * `sudo usermod -aG tty dialout <YOUR_USERNAME_HERE>`
+    * `sudo usermod -aG tty,dialout <YOUR_USERNAME_HERE>`
 
 ## Development paradigm
 
