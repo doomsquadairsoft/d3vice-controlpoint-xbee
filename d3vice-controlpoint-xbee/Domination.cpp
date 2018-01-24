@@ -12,11 +12,13 @@
  * 
  * This class's job is to increment scores according to event inputs, and determine a winner
  */
-Domination::Domination(Score& score) :
-  _score(score)
+Domination::Domination(Score& score)
 {
   _score = score;
 }
+
+Score& Domination::_score = _score;
+
 
 void Domination::update() {
   // Calculate the duration since last tick

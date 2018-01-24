@@ -10,7 +10,7 @@
 
 
 LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score& score, Phase& phase) :
-  _score(score), _neoPixelStrip(neoPixelStrip), _phase(phase)
+  _neoPixelStrip(neoPixelStrip)
 {
   _neoPixelStrip = neoPixelStrip;
   _isStarted = 0;
@@ -19,6 +19,10 @@ LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score& score, Phase& ph
   _isInhale = 0;
   _animationState = 0;
 }
+
+Score& LightStrip::_score = _score;
+Phase& LightStrip::_phase = _phase;
+
 
 void LightStrip::update()
 {

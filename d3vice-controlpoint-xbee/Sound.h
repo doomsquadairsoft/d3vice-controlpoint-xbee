@@ -9,6 +9,8 @@
 #include "Score.h"
 #include "Phase.h"
 
+
+
 class Sound
 {
   public:
@@ -21,8 +23,8 @@ class Sound
     uint8_t _buzzerPin;
     uint32_t _asyncBeepStartTime;
     uint32_t _asyncMorseStartTime;
-    Score& _score;
-    Phase& _phase;
+    static Score& _score;
+    static Phase& _phase;
     bool _isAsyncMorseComplete;
     bool _isAsyncBeepComplete;
     uint32_t _morseDitDuration;

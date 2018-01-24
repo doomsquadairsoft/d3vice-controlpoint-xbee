@@ -45,6 +45,7 @@
 #include "Sound.h"
 #include "Domination.h"
 #include "Phase.h"
+#include "Controller.h"
 
 
 
@@ -75,8 +76,10 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, neopixelPin, NEO_GRB + NEO_KHZ80
 Score score = Score();
 Phase phase = Phase();
 Domination game = Domination(score);
-Button team0Button = Button(0, button0Pin, score, phase);
-Button team1Button = Button(1, button1Pin, score, phase);
+Controller controller = Controller(score, phase);
+
+Button team0Button = Button(0, button0Pin, controller);
+Button team1Button = Button(1, button1Pin, controller);
 LED button0LED = LED(0, button0LEDPin, 50, score, phase);
 LED button1LED = LED(1, button1LEDPin, 50, score, phase);
 LightStrip lightStrip = LightStrip(strip, score, phase);

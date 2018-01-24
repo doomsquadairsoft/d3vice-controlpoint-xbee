@@ -8,8 +8,7 @@
 #include "Phase.h"
 
 
-Sound::Sound(uint32_t duration, uint8_t buzzerPin, Score& score, Phase& phase) :
-  _score(score), _phase(phase)
+Sound::Sound(uint32_t duration, uint8_t buzzerPin, Score& score, Phase& phase)
 {
   _duration = duration;
   _buzzerPin = buzzerPin;
@@ -19,7 +18,12 @@ Sound::Sound(uint32_t duration, uint8_t buzzerPin, Score& score, Phase& phase) :
   _asyncMorseStartTime;
   _isAsyncBeepComplete = 0;
   _isAsyncMorseComplete = 0;
+  _score = score;
+  _phase = phase;
 }
+
+Phase& Sound::_phase = _phase;
+Score& Sound::_score = _score;
 
 void Sound::update()
 {
@@ -34,7 +38,7 @@ void Sound::update()
   * Phase 0-- test phase. Buzzer should do a long beep
   */
   if (_phase.getCurrentPhase() == 0) {
-    return;
+    asyncBeep(1000);
   }
   
   
@@ -72,24 +76,39 @@ void Sound::update()
 
 
 void Sound::asyncMorse(char character) {
+  
   _asyncMorseStartTime = millis();
 }
 
 void Sound::asyncBeep(uint32_t beepDuration) {
-  _asyncBeepStartTime = millis();
+  // if the async beep is not marked as being completed, continue to beep (hold the buzzer pin HIGH.)
+  if (!_isAsyncBeepComplete) {
 
-  // if the beepDuration has not yet elapsed, continue beeping
-  if (millis() - _asyncBeepStartTime < beepDuration) {
-    digitalWrite(_buzzerPin, HIGH);
-  }
+    // if we are just starting the beep at the first tick of a new phase,
+    //   set the timestamp so we can later compare it to the elapsed time
+    //   this will later help us determine if it is time to stop beeping
+    if (_phase.getWasSwitchedLastTick() == 1) {
+      _asyncBeepStartTime = millis();
+    }
+  
+    // if the beepDuration has not yet elapsed, continue beeping
+    if (millis() - _asyncBeepStartTime < beepDuration) {
+      digitalWrite(_buzzerPin, HIGH);
+    }
+  
+    // stop buzzing once the beepDuration has elapsed
+    else {
+      if (digitalRead(_buzzerPin)) {
+        digitalWrite(_buzzerPin, LOW);
 
-  // stop buzzing once the beepDuration has elapsed
-  else {
-    if (digitalRead(_buzzerPin)) {
-      digitalWrite(_buzzerPin, LOW);
+        // mark the async beep as having been completed.
+        // this prevents the beep from continuing after it's allotted duration has elapsed.
+        _isAsyncBeepComplete = 1;
+      }
     }
   }
 }
-  
-   
+
+
+
 

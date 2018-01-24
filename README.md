@@ -11,7 +11,9 @@ Arduino Fio / XBee based D3VICE control point for Airsoft games
   * Add your user account to tty and dialout groups (May or may not be required for your OS)
     * `sudo usermod -aG tty dialout <YOUR_USERNAME_HERE>`
 
+## Development paradigm
 
+Code follows [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) design paradigm as much as possible. Button.cpp and Radio.cpp interface with the user, which calls [C]ontroller.cpp functions which modify the game [M]odel in Phase.cpp and Score.cpp. [V]iew classes are Sound.cpp, LightStrip.cpp, and LED.cpp. User input should never directly modify views. User input should never directly modify the Model.
 
 ## Enclosure Ideas
 

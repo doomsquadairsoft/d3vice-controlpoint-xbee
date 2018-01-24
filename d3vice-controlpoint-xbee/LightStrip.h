@@ -20,8 +20,8 @@ class LightStrip
     void _animate();
     uint8_t _pulsate(uint8_t breathState);
     Adafruit_NeoPixel& _neoPixelStrip;
-    Score& _score;
-    Phase& _phase;
+    static Score& _score;
+    static Phase& _phase;
     bool _isStarted;
     bool _isInhale;
     uint8_t _breathState;

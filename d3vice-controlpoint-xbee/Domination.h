@@ -1,5 +1,5 @@
-#ifndef Game_h
-#define Game_h
+#ifndef Domination_h
+#define Domination_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
     #include "Arduino.h"
@@ -14,7 +14,7 @@ class Domination
     Domination(Score& score);
     void update();
   private:
-    Score& _score;
+    static Score& _score;
 };
 
 #endif

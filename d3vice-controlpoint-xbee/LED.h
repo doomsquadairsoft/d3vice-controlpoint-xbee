@@ -6,8 +6,7 @@
 #else
     #include "WProgram.h"
 #endif
-#include "Score.h"
-#include "Phase.h"
+#include "Controller.h"
 
 class LED
 {
@@ -20,8 +19,8 @@ class LED
     uint8_t _ledPin;
     unsigned long _unlitTime;
     unsigned long _duration;
-    Score& _score;
-    Phase& _phase;
+    static Score& _score;
+    static Phase& _phase;
 };
 
 #endif
