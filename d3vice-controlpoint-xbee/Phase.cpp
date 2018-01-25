@@ -29,3 +29,10 @@ bool Phase::getWasSwitchedLastTick()
   return _isSwitchedLastTick;
 }
 
+void Phase::update()
+{
+  if (_isSwitchedLastTick = 1) {
+    _isSwitchedLastTick = 0;
+  }
+}
+

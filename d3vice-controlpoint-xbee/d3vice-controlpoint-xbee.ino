@@ -192,6 +192,12 @@ void loop() {
   // Update the score based on the controlling team
   score.update();
 
+  // Update the phase
+  // it is important to run this last, after all other modules.
+  // Phase::update() handles resetting Phase::_isSwitchedLastTick to 0,
+  // an important boolean which ensures proper buzzer cutoff, etc.
+  phase.update();
+
 
   // @TODO XBee (wireless) stuff
   // SPEC: When D3VICE starts up, send HELLO out to network

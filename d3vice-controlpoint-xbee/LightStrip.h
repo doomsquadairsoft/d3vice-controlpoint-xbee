@@ -17,7 +17,7 @@ class LightStrip
     LightStrip(Adafruit_NeoPixel& neoPixel, Score* score, Phase* phase);
     void update();
   private:
-    void _animate();
+    void _animatePhase4();
     uint8_t _pulsate(uint8_t breathState);
     Adafruit_NeoPixel& _neoPixelStrip;
     Score* _score;
@@ -25,7 +25,7 @@ class LightStrip
     bool _isStarted;
     bool _isInhale;
     uint8_t _breathState;
-    uint8_t _animationState;
+    uint8_t _phase4AnimationState;
     float _sinIn;
 };
 

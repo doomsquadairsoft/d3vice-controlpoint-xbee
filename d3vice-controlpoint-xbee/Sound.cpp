@@ -36,7 +36,8 @@ void Sound::update()
   * Phase 0-- test phase. Buzzer should do a long beep
   */
   if (_phase->getCurrentPhase() == 0) {
-    asyncBeep(1000);
+    asyncBeep(100);
+    return;
   }
   
   
@@ -44,6 +45,7 @@ void Sound::update()
   * Phase 1-- Hello phase. Buzzer should do nothing
   */
   else if (_phase->getCurrentPhase() == 1) {
+    asyncBeep(1000);
     return;
   }
   

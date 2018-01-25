@@ -17,49 +17,93 @@ LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score* score, Phase* ph
   _breathState = 0;
   _sinIn = 4.712;
   _isInhale = 0;
-  _animationState = 0;
+  _phase4AnimationState = 0;
 }
 
 void LightStrip::update()
 {
-  // if the light strip has never been updated post-testSequence(),
-  //   show the default animation
-//  if (_isStarted == 0) {
-//    _isStarted = 1;
-//    _animationState = 1;
-//  }
 
-  if (_score->getLastButtonPressTime()) {
-    // if team 0 is in control
-    //   if team 0 hasn't captured the point within the last 5 seconds,
-    //     switch to animation 2
-    //   else if team 0 captured the point within the last 5 seconds,
-    //     switch to animation 1
-    if (!_score->getControllingTeam()) {
-      if (millis() - _score->getLastButtonPressTime() > 5000) {
-        _animationState = 2;
+  
+  /**
+   * Phase 0
+   * 
+   * Test phase
+   * LightStrip should cycle through RGB colors to show all pixels are functioning properly
+   */
+  if (_phase->getCurrentPhase() == 0) {
+    // @TODO
+  }
+
+  /**
+   * Phase 1
+   * 
+   * Hello phase
+   * LightStrip should do nothing
+   */
+  else if (_phase->getCurrentPhase() == 1) {
+    return;
+  }
+
+  /**
+   * Phase 2
+   * 
+   * Programming > Game mode
+   * Light strip should cycle through colors/patterns which symbolize the game modes
+   */
+  else if (_phase->getCurrentPhase() == 2) {
+    // @TODO
+    return;
+  }
+
+  /**
+   * Phase 3
+   * 
+   * Programming > Domination > duration
+   * LightStrip should display the user selected duration in binary
+   */
+   
+
+  /**
+   * Phase 4
+   * 
+   * Domination Game Run
+   * LightStrip should show the controlling team's color
+   */
+  else if (_phase->getCurrentPhase() == 4) {
+    if (_score->getLastButtonPressTime()) {
+      // if team 0 is in control
+      //   if team 0 hasn't captured the point within the last 5 seconds,
+      //     switch to animation 2
+      //   else if team 0 captured the point within the last 5 seconds,
+      //     switch to animation 1
+      if (!_score->getControllingTeam()) {
+        if (millis() - _score->getLastButtonPressTime() > 5000) {
+          _phase4AnimationState = 2;
+        }
+        else {
+          _phase4AnimationState = 1;
+        }
       }
+    
+      // else if team 1 is in control
+      //   if team 1 hasn't captured the point within the last 5 seconds,
+      //     switch to animation 4
+      //   else if team 1 captured the point within the last 5 seconds,
+      //     switch to animation 3
       else {
-        _animationState = 1;
+        if (millis() - _score->getLastButtonPressTime() > 5000) {
+          _phase4AnimationState = 4;
+        }
+        else {
+          _phase4AnimationState = 3;
+        }
       }
     }
   
-    // else if team 1 is in control
-    //   if team 1 hasn't captured the point within the last 5 seconds,
-    //     switch to animation 4
-    //   else if team 1 captured the point within the last 5 seconds,
-    //     switch to animation 3
-    else {
-      if (millis() - _score->getLastButtonPressTime() > 5000) {
-        _animationState = 4;
-      }
-      else {
-        _animationState = 3;
-      }
-    }
+    _animatePhase4();
   }
 
-  _animate();
+  
 }
 
 
@@ -88,11 +132,11 @@ uint8_t LightStrip::_pulsate(uint8_t breathState) {
 
 
 
-void LightStrip::_animate()
+void LightStrip::_animatePhase4()
 {
   // Animation state 0-- default state, nobody controls the point
   // shows yellow "breathing" color.
-  if (_animationState == 0) {
+  if (_phase4AnimationState == 0) {
     // sine wave loop
     // makes LEDs pulsate smoothly
     // greets https://www.sparkfun.com/tutorials/329
@@ -124,7 +168,7 @@ void LightStrip::_animate()
 
   // Animation state 1-- team 0 just captured the point.
   // shows rapidly pulsating red color
-  else if (_animationState == 1) {
+  else if (_phase4AnimationState == 1) {
     _breathState = _pulsate(_breathState);
     for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
       _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(_breathState, 0, 0));
@@ -135,7 +179,7 @@ void LightStrip::_animate()
 
   // Animation state 2-- team 0 controls the point.
   // shows red timer pattern
-  else if (_animationState == 2) {
+  else if (_phase4AnimationState == 2) {
     // @todo
     for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
       _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(50, 0, 0));
@@ -146,7 +190,7 @@ void LightStrip::_animate()
 
   // Animation state 3-- team 1 just captured the point.
   // shows rapidly pulsating green color
-  else if (_animationState == 3) {
+  else if (_phase4AnimationState == 3) {
     _breathState = _pulsate(_breathState);
     for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
       _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, _breathState, 0));
@@ -157,7 +201,7 @@ void LightStrip::_animate()
   
   // Animation state 4-- team 1 controls the point.
   // shows green timer pattern
-  else if (_animationState == 4) {
+  else if (_phase4AnimationState == 4) {
     // @todo
     for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
       _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 50, 0));
