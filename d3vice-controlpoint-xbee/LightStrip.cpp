@@ -103,6 +103,30 @@ void LightStrip::update()
     _animatePhase4();
   }
 
+
+  /**
+   * Phaes 5
+   * 
+   * Domination paused
+   * LightStrip should display a cycle of blinking lights
+   *   * green blinking progress bar
+   *   * red blinking progress bar
+   *   * Yellow blinking(?) maybe maybe not
+   */
+  else if (_phase->getCurrentPhase() == 5) {
+    // @TODO
+  }
+
+  /**
+   * Phase 6
+   * 
+   * Domination game won
+   * LightStrip should display a steady blinking color of the winning team
+   */
+  else if (_phase->getCurrentPhase() == 6) {
+    // @TODO
+  }
+
   
 }
 

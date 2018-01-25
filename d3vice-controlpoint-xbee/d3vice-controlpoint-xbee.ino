@@ -46,6 +46,7 @@
 #include "Domination.h"
 #include "Phase.h"
 #include "Controller.h"
+#include "Radio.h"
 
 
 
@@ -77,7 +78,8 @@ Score score = Score();
 Phase phase = Phase();
 Domination game = Domination(score);
 Controller controller = Controller(&score, &phase);
-//
+
+Radio radio = Radio(xbee, &phase, &controller);
 Button team0Button = Button(0, button0Pin, &controller);
 Button team1Button = Button(1, button1Pin, &controller);
 LED button0LED = LED(0, button0LEDPin, 50, &score, &phase);
@@ -146,29 +148,6 @@ void setup() {
  *  
  * Main loop. One pass through the loop is called a "tick"
  * 
- * PHASES
- *   * Phases are a combination of preparatory programming steps, and game modes.
- *   * Phases determine how the discreet classes (Button.cpp, Domination.cpp, LED.cpp)
- *     react to changes in game state.
- *   
- *   Phase 0-- Test phase
- *     A test sequence runs, lighting up every LED and testing the buzzer.
- *     Allows user to verify that all LED & sound hardware is functioning properly. 
- *     
- *   Phase 1-- Hello phase. 
- *     D3VICE network syncronization. D3VICE finds an existing game on the XBee network
- *     if one exists. If no game is found, D3VICE switches to standalone mode and enters programming phase.
- *   
- *   Phase 2-- Programming > Game mode
- *     D3VICE buttons act as input for choosing the game mode
- *     
- *   Phase 3-- Programming > Domination > duration
- *     D3VICE buttons act as input for choosing the total accumulated time a team needs to control the point to win
- *     
- *   Phase 4-- Domination > Run
- *   Phase 5-- Domination > Pause
- *   Phase 6-- Domination > Win
- *   
  */
 void loop() {
 
@@ -192,10 +171,13 @@ void loop() {
   // Update the score based on the controlling team
   score.update();
 
+  // Update the radio
+  radio.update();
+
   // Update the phase
   // it is important to run this last, after all other modules.
   // Phase::update() handles resetting Phase::_isSwitchedLastTick to 0,
-  // an important boolean which ensures proper buzzer cutoff, etc.
+  // an important boolean which ensures proper buzzer operation
   phase.update();
 
 

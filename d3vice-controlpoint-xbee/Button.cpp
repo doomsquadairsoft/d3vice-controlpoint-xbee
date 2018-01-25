@@ -44,10 +44,17 @@ void Button::update() {
 void Button::processPress() {
 
   /**
-   * Phase 0-- test phase. Button should do nothing when pressed
+   * Phase 0-- test phase. Button should advance to next phase when pressed
+   */
+  if (_controller->getCurrentPhase() == 0) {
+    _controller->advancePhase();
+    return;
+  }
+
+  /**
    * Phase 1-- Hello phase. Button should do nothing when pressed
    */
-  if (_controller->getCurrentPhase() == 0 || _controller->getCurrentPhase() == 1) {
+  else if (_controller->getCurrentPhase() == 1) {
     return;
   }
 
