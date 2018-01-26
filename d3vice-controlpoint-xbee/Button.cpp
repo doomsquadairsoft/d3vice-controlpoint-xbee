@@ -13,6 +13,7 @@ Button::Button(bool teamNumber, uint8_t buttonPin, Controller* controller)
   _teamNumber = teamNumber;
   _buttonPin = buttonPin;
   _controller = controller;
+  _wasPressed = 0;
 }
 
 /**
@@ -33,7 +34,7 @@ void Button::update() {
 
   // if the button is not pressed this tick, but was pressed last tick, process release.
   else if (!digitalRead(_buttonPin) && _wasPressed) {
-    
+    processRelease();
   }
 }
 

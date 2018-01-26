@@ -15,8 +15,6 @@ Controller::Controller(Score* score, Phase* phase)
   _phase = phase;
 }
 
-//Score& Controller::_score = _score;
-//Phase& Controller::_phase = _phase;
 
 
 void Controller::advancePhase() {
