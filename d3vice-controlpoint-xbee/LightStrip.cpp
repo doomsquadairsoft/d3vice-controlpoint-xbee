@@ -18,6 +18,8 @@ LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score* score, Phase* ph
   _sinIn = 4.712;
   _isInhale = 0;
   _phase4AnimationState = 0;
+  _phase = phase;
+  _score = score;
 }
 
 void LightStrip::update()
@@ -32,6 +34,10 @@ void LightStrip::update()
    */
   if (_phase->getCurrentPhase() == 0) {
     // @TODO
+    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(25, 0, 0));
+      _neoPixelStrip.show();
+    }
   }
 
   /**
@@ -41,6 +47,10 @@ void LightStrip::update()
    * LightStrip should do nothing
    */
   else if (_phase->getCurrentPhase() == 1) {
+    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 25, 0));
+      _neoPixelStrip.show();
+    }
     return;
   }
 
@@ -52,6 +62,10 @@ void LightStrip::update()
    */
   else if (_phase->getCurrentPhase() == 2) {
     // @TODO
+    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 25));
+      _neoPixelStrip.show();
+    }
     return;
   }
 
@@ -61,7 +75,14 @@ void LightStrip::update()
    * Programming > Domination > duration
    * LightStrip should display the user selected duration in binary
    */
-   
+  else if (_phase->getCurrentPhase() == 3) {
+    // @TODO
+    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(82, 101, 4));
+      _neoPixelStrip.show();
+    }
+    return;
+  }
 
   /**
    * Phase 4
@@ -115,6 +136,10 @@ void LightStrip::update()
    */
   else if (_phase->getCurrentPhase() == 5) {
     // @TODO
+    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(52, 4, 101));
+      _neoPixelStrip.show();
+    }
   }
 
   /**
@@ -125,6 +150,24 @@ void LightStrip::update()
    */
   else if (_phase->getCurrentPhase() == 6) {
     // @TODO
+    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(33, 89, 138));
+      _neoPixelStrip.show();
+    }
+  }
+
+
+  /**
+   * Phase ???
+   * 
+   * fall-through unknown phase.
+   * this code should never run. If it does, there be bugs!
+   */
+  else {
+    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(10, 10, 10));
+      _neoPixelStrip.show();
+    }
   }
 
   

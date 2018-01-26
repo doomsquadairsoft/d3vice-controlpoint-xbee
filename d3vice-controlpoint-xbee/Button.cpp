@@ -84,7 +84,8 @@ void Button::processPress() {
    *   Red button decrements the time by 1 minute (down to a minimum of 1 second)
    */
   else if (_controller->getCurrentPhase() == 3) {
-    
+    // @todo
+    return;
   }
 
 
@@ -97,7 +98,7 @@ void Button::processPress() {
    */
   else if (_controller->getCurrentPhase() == 4) {
     _wasPressed = 1;
-    _controller->triggerButtonPress(_teamNumber);
+    //_controller->triggerButtonPress(_teamNumber);
   }
 
 

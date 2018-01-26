@@ -60,16 +60,17 @@ void Sound::update()
     // so it's possible that async morse will be cut off from finishing coding because a button was pressed.
     // therefore, we must ensure that on future calls to Sound in a different phase, we set the buzzerPin LOW.
     // Otherwise, an unfinished CW could beep indefinitely.
-    asyncMorse('G');
+    //asyncMorse('G');
+    return;
   }
   
   
   
   // If a button press happened less than duration ms ago,
   //   start buzzing
-  if (millis() - _score->getLastButtonPressTime() < _duration) {
-    asyncBeep(_duration);
-  }
+  //if (millis() - _score->getLastButtonPressTime() < _duration) {
+  //  asyncBeep(_duration);
+  //}
 }
   
     

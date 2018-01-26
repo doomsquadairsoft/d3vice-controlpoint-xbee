@@ -119,6 +119,7 @@ void setup() {
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 
+
   // run a test sequence which the user can observe to verify that all the 
   // lights and sounds are functioning properly.
   testSequence();
@@ -197,6 +198,8 @@ void loop() {
 
 
 void testSequence() {
+  
+  
   // display all colors on neopixel strip
   digitalWrite(onboardLEDPin, HIGH);
   colorWipe(strip.Color(255, 0, 0), 20); // Red
@@ -238,7 +241,38 @@ void testSequence() {
   digitalWrite(buzzerPin, LOW);
   digitalWrite(onboardLEDPin, LOW);
   delay(1000);
+
+
   
+//  // see if Phase is working correctly by displaying the
+//  // current phase in binary on the neopixel strip
+//  // beep the buzzer
+//  digitalWrite(buzzerPin, HIGH);
+//  digitalWrite(onboardLEDPin, HIGH);
+//  delay(30);
+//  digitalWrite(buzzerPin, LOW);
+//  digitalWrite(onboardLEDPin, LOW);
+//  delay(70);
+//  
+//  digitalWrite(buzzerPin, HIGH);
+//  digitalWrite(onboardLEDPin, HIGH);
+//  delay(30);
+//  digitalWrite(buzzerPin, LOW);
+//  digitalWrite(onboardLEDPin, LOW);
+//  delay(70);
+//  
+//  digitalWrite(buzzerPin, HIGH);
+//  digitalWrite(onboardLEDPin, HIGH);
+//  delay(30);
+//  digitalWrite(buzzerPin, LOW);
+//  digitalWrite(onboardLEDPin, LOW);
+//  delay(70);
+//  
+//  
+//  strip.setPixelColor(phase.getCurrentPhase(), strip.Color(25, 0, 0));
+//  strip.show();
+//  delay(3000);
+// 
 
 }
 

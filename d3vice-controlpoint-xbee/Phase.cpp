@@ -33,21 +33,19 @@
 Phase::Phase()
 {
   _phase = 0;
-  _isSwitchedLastTick = 1;
+  _isSwitchedLastTick = 1; // starts as 1 so other classes know phase 0 just started
+  _isPhaseAdvanceQueued = 0;
 }
 
-uint8_t Phase::advance()
+/**
+ * advance
+ * 
+ * queues a phase advancement to happen during the next run of Phase::update()
+ */
+void Phase::advance()
 {
-  _isSwitchedLastTick = 1;
-
-  if (_phase == 6) {
-    _phase = 0;
-  }
-  else {
-    _phase += 1;
-  }
-  
-  return _phase;
+  _isPhaseAdvanceQueued = 1;
+  return;
 }
 
 
@@ -63,8 +61,40 @@ bool Phase::getWasSwitchedLastTick()
 
 void Phase::update()
 {
-  if (_isSwitchedLastTick = 1) {
+  if (_isSwitchedLastTick == 1) {
     _isSwitchedLastTick = 0;
   }
+
+  if (_isPhaseAdvanceQueued == 1) {
+    _isPhaseAdvanceQueued = 0;
+    _advance();
+  }
+}
+
+/**
+ * Phase::_advance()
+ * 
+ * Do the natural phase advancement.
+ * Do not call Phase::_advance() function from other classes. Instead call Phase::advance()
+ *
+ * It is possible that phase advancments are not in order (ex: from 1 to 2)
+ * It is possible that order may be more like (ex: 1 to 7)
+ * This is because more phases may be added later on which fall outside natural integer progression.
+ * In this function we can code any order we want, for cases in which advance() would be called from other classes.
+ * It may make more sense to add a separate function for explicitly switching to a specific phase. (ex: Phase::goToPhase(20);)
+ * 
+ */
+void Phase::_advance()
+{
+  _isSwitchedLastTick = 1;
+
+  if (_phase == 6) {
+    _phase = 0;
+  }
+  else {
+    _phase += 1;
+  }
+  
+  return;
 }
 
