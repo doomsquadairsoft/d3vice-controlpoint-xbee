@@ -1,6 +1,13 @@
 # d3vice-controlpoint-xbee
 Arduino Fio / XBee based D3VICE control point for Airsoft games
 
+## Feedback
+
+If you have used and enjoy this code base, I'd love to hear from you!
+
+[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/insanity54)
+
+
 ## Development setup process
 
   * Download, Install, Open Arduino IDE >=1.8.5 from https://arduino.cc/
@@ -43,8 +50,6 @@ SL 40B51A26
 SH 13A200
 SL 408774EC
 
-## Feedback
+## Todo list
 
-If you have used and enjoy this code base, I'd love to hear from you!
-
-[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/insanity54)
+  * [ ] Fix button debounce issue
