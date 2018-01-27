@@ -52,4 +52,4 @@ SL 408774EC
 
 ## Todo list
 
-  * [ ] Fix button debounce issue
+  * [x] Fix button debounce issue

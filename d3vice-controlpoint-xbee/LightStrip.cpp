@@ -48,7 +48,7 @@ void LightStrip::update()
    */
   else if (_phase->getCurrentPhase() == 1) {
     for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
-      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 25, 0));
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 255, 0));
       _neoPixelStrip.show();
     }
     return;

@@ -156,7 +156,7 @@ void loop() {
   
   // If either team has pressed their button,
   // register the appropriate event. (press/release)
-  team0Button.update();
+  //team0Button.update();
   team1Button.update();
   
 
@@ -242,6 +242,8 @@ void testSequence() {
   digitalWrite(onboardLEDPin, LOW);
   delay(1000);
 
+
+  
 
   
 //  // see if Phase is working correctly by displaying the

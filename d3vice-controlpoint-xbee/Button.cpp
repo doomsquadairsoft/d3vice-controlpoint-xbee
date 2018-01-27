@@ -44,6 +44,9 @@ void Button::update() {
  */
 void Button::processPress() {
 
+  _wasPressed = 1;
+
+  
   /**
    * Phase 0-- test phase. Button should advance to next phase when pressed
    */
@@ -98,7 +101,6 @@ void Button::processPress() {
    *   Button should set _wasPressed to TRUE, set controlling team in _score, and timestamp now as the button's last press time.
    */
   else if (_controller->getCurrentPhase() == 4) {
-    _wasPressed = 1;
     //_controller->triggerButtonPress(_teamNumber);
   }
 
