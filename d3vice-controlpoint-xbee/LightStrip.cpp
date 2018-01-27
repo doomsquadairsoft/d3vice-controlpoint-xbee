@@ -25,6 +25,18 @@ LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score* score, Phase* ph
 void LightStrip::update()
 {
 
+  // debug
+  for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+    _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 0));
+  }
+  if (_phase->getWasSwitchedLastTick() == 1) {
+    _neoPixelStrip.setPixelColor(0, _neoPixelStrip.Color(25, 25, 25));
+  } else {
+    _neoPixelStrip.setPixelColor(1, _neoPixelStrip.Color(17, 0, 21));
+  }
+  _neoPixelStrip.show();
+  delay(100);
+  return;
   
   /**
    * Phase 0
@@ -48,7 +60,7 @@ void LightStrip::update()
    */
   else if (_phase->getCurrentPhase() == 1) {
     for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
-      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 255, 0));
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 25, 0));
       _neoPixelStrip.show();
     }
     return;
@@ -62,10 +74,21 @@ void LightStrip::update()
    */
   else if (_phase->getCurrentPhase() == 2) {
     // @TODO
-    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
-      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 25));
+//    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+//      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 25));
+//      _neoPixelStrip.show();
+//    }
+
+      for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+        _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 0));
+      }
+      if (_phase->getWasSwitchedLastTick() == 1) {
+        _neoPixelStrip.setPixelColor(0, _neoPixelStrip.Color(25, 25, 25));
+      } else {
+        _neoPixelStrip.setPixelColor(1, _neoPixelStrip.Color(52, 1, 63));
+      }
       _neoPixelStrip.show();
-    }
+      
     return;
   }
 

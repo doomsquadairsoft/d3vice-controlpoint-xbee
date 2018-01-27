@@ -156,7 +156,7 @@ void loop() {
   
   // If either team has pressed their button,
   // register the appropriate event. (press/release)
-  //team0Button.update();
+  team0Button.update();
   team1Button.update();
   
 
