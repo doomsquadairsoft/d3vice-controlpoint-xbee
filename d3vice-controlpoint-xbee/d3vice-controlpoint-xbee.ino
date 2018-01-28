@@ -85,7 +85,7 @@ Button team1Button = Button(1, button1Pin, &controller);
 LED button0LED = LED(0, button0LEDPin, 50, &score, &phase);
 LED button1LED = LED(1, button1LEDPin, 50, &score, &phase);
 LightStrip lightStrip = LightStrip(strip, &score, &phase);
-Sound sound = Sound(100, buzzerPin, &score, &phase);
+Sound sound = Sound(buzzerPin, &phase);
 
 
 

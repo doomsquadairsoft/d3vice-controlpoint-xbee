@@ -53,4 +53,4 @@ SL 408774EC
 ## Todo list
 
   * [x] Fix button debounce issue
-  * [ ] Fix endless beep on phase >=1
+  * [x] Fix endless beep on phase >=1

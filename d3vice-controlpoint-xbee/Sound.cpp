@@ -4,111 +4,51 @@
     #include "WProgram.h"
 #endif
 #include "Sound.h"
-#include "Score.h"
 #include "Phase.h"
 
 
-Sound::Sound(uint32_t duration, uint8_t buzzerPin, Score* score, Phase* phase)
+Sound::Sound(uint8_t buzzerPin, Phase* phase)
 {
-  _duration = duration;
   _buzzerPin = buzzerPin;
-  _morseDitDuration = 100;
-  _morseDahDuration = 350;
-  _asyncBeepStartTime;
-  _asyncMorseStartTime;
-  _isAsyncBeepComplete = 0;
-  _isAsyncMorseComplete = 0;
-  _score = score;
   _phase = phase;
 }
 
 
+
 void Sound::update()
 {
+  // if the buzzer is buzzing
+  //   if the buzzer needs to stop buzzing
+  //     stop the buzzer
+  asyncBeep();
 
-  // If the phase was just switched, reset the variables which prevent async beeps/morse sequences from occuring twice.
+  // if this is the first tick of a new phase
+  //   start beeping
   if (_phase->getWasSwitchedLastTick() == 1) {
-    _isAsyncBeepComplete = 0;
-    _isAsyncMorseComplete = 0;
-  }
-  
-  /**
-  * Phase 0-- test phase. Buzzer should do a long beep
-  */
-  if (_phase->getCurrentPhase() == 0) {
     asyncBeep(100);
-    return;
   }
   
-  
-  /**
-  * Phase 1-- Hello phase. Buzzer should do nothing
-  */
-  else if (_phase->getCurrentPhase() == 1) {
-    asyncBeep(1000);
-    return;
-  }
-  
-  /**
-  * Phase 2-- Programming > Game mode.
-  *   The phase where the type of game is chosen.
-  *   Buzzer should code "G" in morse to signal the user we are on (G)ame Mode selection
-  */
-  else if (_phase->getCurrentPhase() == 2) {
-    // as long as we stay in this phase, start or continue transmitting the morse code character
-    // we have to remember that this function is called hundreds (thousands?) of times a second
-    // so it's possible that async morse will be cut off from finishing coding because a button was pressed.
-    // therefore, we must ensure that on future calls to Sound in a different phase, we set the buzzerPin LOW.
-    // Otherwise, an unfinished CW could beep indefinitely.
-    //asyncMorse('G');
-    return;
-  }
-  
-  
-  
-  // If a button press happened less than duration ms ago,
-  //   start buzzing
-  //if (millis() - _score->getLastButtonPressTime() < _duration) {
-  //  asyncBeep(_duration);
-  //}
-}
-  
-    
-
-
-void Sound::asyncMorse(char character) {
-  
-  _asyncMorseStartTime = millis();
 }
 
-void Sound::asyncBeep(uint32_t beepDuration) {
-  // if the async beep is not marked as being completed, continue to beep (hold the buzzer pin HIGH.)
-  if (!_isAsyncBeepComplete) {
 
-    // if we are just starting the beep at the first tick of a new phase,
-    //   set the timestamp so we can later compare it to the elapsed time
-    //   this will later help us determine if it is time to stop beeping
-    if (_phase->getWasSwitchedLastTick() == 1) {
-      _asyncBeepStartTime = millis();
-    }
-  
-    // if the beepDuration has not yet elapsed, continue beeping
-    if (millis() - _asyncBeepStartTime < beepDuration) {
-      digitalWrite(_buzzerPin, HIGH);
-    }
-  
-    // stop buzzing once the beepDuration has elapsed
-    else {
-      if (digitalRead(_buzzerPin)) {
-        digitalWrite(_buzzerPin, LOW);
+void Sound::asyncBeep(uint32_t duration)
+{
+  // if the function was supplied a duration, set a timer for that duration and start beeping.
+  _asyncBeepStartTime = millis();
+  _asyncBeepDuration = duration;
+  digitalWrite(_buzzerPin, HIGH);
+  return;
+}
 
-        // mark the async beep as having been completed.
-        // this prevents the beep from continuing after it's allotted duration has elapsed.
-        _isAsyncBeepComplete = 1;
-      }
-    }
+void Sound::asyncBeep()
+{
+  // if the function was not supplied a duration, continue beeping if duration has not expired
+  // otherwise, stop beeping
+  if (millis() - _asyncBeepStartTime > _asyncBeepDuration) {
+    digitalWrite(_buzzerPin, LOW);
   }
 }
+
 
 
 
