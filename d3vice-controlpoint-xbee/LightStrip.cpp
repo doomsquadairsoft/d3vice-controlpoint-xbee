@@ -35,7 +35,6 @@ void LightStrip::update()
     _neoPixelStrip.setPixelColor(1, _neoPixelStrip.Color(17, 0, 21));
   }
   _neoPixelStrip.show();
-  delay(100);
   return;
   
   /**

@@ -205,42 +205,42 @@ void testSequence() {
   colorWipe(strip.Color(255, 0, 0), 20); // Red
   colorWipe(strip.Color(0, 255, 0), 20); // Green
   colorWipe(strip.Color(0, 0, 255), 20); // Blue
-  delay(250);
+  delay(50);
   pixelsOff();
   digitalWrite(onboardLEDPin, LOW);
 
-  delay(250);
+  delay(50);
 
   // blink the button LEDs
   digitalWrite(button0LEDPin, HIGH);
   digitalWrite(onboardLEDPin, HIGH);
-  delay(250);
+  delay(50);
   digitalWrite(button0LEDPin, LOW);
   digitalWrite(onboardLEDPin, LOW);
 
-  delay(250);
+  delay(50);
   
   digitalWrite(button1LEDPin, HIGH);
   digitalWrite(onboardLEDPin, HIGH);
-  delay(250);
+  delay(50);
   digitalWrite(button1LEDPin, LOW);
   digitalWrite(onboardLEDPin, LOW);
 
 
   // blink the on-board LED
   digitalWrite(onboardLEDPin, HIGH);
-  delay(250);
+  delay(50);
   digitalWrite(onboardLEDPin, LOW);
 
-  delay(250);
+  delay(50);
 
   // beep the buzzer
   digitalWrite(buzzerPin, HIGH);
   digitalWrite(onboardLEDPin, HIGH);
-  delay(1000);
+  delay(250);
   digitalWrite(buzzerPin, LOW);
   digitalWrite(onboardLEDPin, LOW);
-  delay(1000);
+  delay(100);
 
 
   
