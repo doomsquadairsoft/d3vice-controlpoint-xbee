@@ -54,3 +54,4 @@ SL 408774EC
 
   * [x] Fix button debounce issue
   * [x] Fix endless beep on phase >=1
+  * [ ] Add button hold logic

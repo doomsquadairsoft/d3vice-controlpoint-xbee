@@ -22,6 +22,8 @@ class Controller
     void advancePhase();
     void triggerButtonPress(bool buttonNumber);
     uint8_t getCurrentPhase();
+    bool getButtonState(bool buttonNumber);
+    void setButtonState(bool buttonNumber, bool buttonState);
   private:
     Score* _score;
     Phase* _phase;

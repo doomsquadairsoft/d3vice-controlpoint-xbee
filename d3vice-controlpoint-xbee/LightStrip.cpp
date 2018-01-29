@@ -25,17 +25,17 @@ LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score* score, Phase* ph
 void LightStrip::update()
 {
 
-  // debug
-  for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
-    _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 0));
-  }
-  if (_phase->getWasSwitchedLastTick() == 1) {
-    _neoPixelStrip.setPixelColor(0, _neoPixelStrip.Color(25, 25, 25));
-  } else {
-    _neoPixelStrip.setPixelColor(1, _neoPixelStrip.Color(17, 0, 21));
-  }
-  _neoPixelStrip.show();
-  return;
+//  // debug
+//  for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+//    _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 0));
+//  }
+//  if (_phase->getWasSwitchedLastTick() == 1) {
+//    _neoPixelStrip.setPixelColor(0, _neoPixelStrip.Color(25, 25, 25));
+//  } else {
+//    _neoPixelStrip.setPixelColor(1, _neoPixelStrip.Color(17, 0, 21));
+//  }
+//  _neoPixelStrip.show();
+//  return;
   
   /**
    * Phase 0

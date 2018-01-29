@@ -21,6 +21,7 @@ class Score
     long unsigned int setLastButtonPressTime(long unsigned int lastButtonPressTime);
     long getTeamScore(bool teamNumber);
     void increment(bool teamNumber, unsigned long duration);
+    bool getButtonState(bool buttonNumber);
   private:
     long _team0Score;
     long _team1Score;

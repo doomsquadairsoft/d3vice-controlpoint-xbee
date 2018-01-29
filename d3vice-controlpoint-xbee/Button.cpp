@@ -14,6 +14,7 @@ Button::Button(bool teamNumber, uint8_t buttonPin, Controller* controller)
   _buttonPin = buttonPin;
   _controller = controller;
   _wasPressed = 0;
+
 }
 
 /**
@@ -44,8 +45,17 @@ void Button::update() {
  */
 void Button::processPress() {
 
-  _wasPressed = 1;
+  _isReleased = 0;
+  _isPressed = 1;
+  
 
+  // set the wasPressed boolean to TRUE which will be queried in later ticks to see if the button state was changed since last tick
+  _wasPressed = 1;
+  
+
+  // set a start press time to later be used to determine if the button is being held (multi-button press&hold functionality)
+  _startPressTime = millis();
+  
   
   /**
    * Phase 0-- test phase. Button should advance to next phase when pressed
@@ -88,7 +98,12 @@ void Button::processPress() {
    *   Red button decrements the time by 1 minute (down to a minimum of 1 second)
    */
   else if (_controller->getCurrentPhase() == 3) {
-    // @todo
+    if (_teamNumber == 0) {
+      //_controller->incrementTimeToWin(60000);
+    }
+    else {
+      //_controller->decrementTimeToWin(60000);
+    }
     return;
   }
 
@@ -144,5 +159,54 @@ void Button::processPress() {
  */
 void Button::processRelease() {
   _wasPressed = 0;
+  _isPressed = 0;
+  _isHeld = 0;
+}
+
+
+
+
+/**
+ * processHold
+ * 
+ * the action to do when the button is held
+ * 
+ * This function is for single-button holds only.
+ * multi-button holds are handled in ButtonManager.
+ */
+void Button::processHold() {
+
+  _isHeld = 1;
+
+  /**
+   * Phase 2-- Programming > Game mode.
+   *   The phase where the type of game is chosen.
+   *   Holding button 0 
+   */
+  if (_controller->getCurrentPhase() == 2) {
+    //
+  }
+}
+
+
+/**
+ * getState
+ * 
+ * 0 released
+ * 1 pressed
+ * 2 held
+ */
+uint8_t Button::getState() {
+  if (_isPressed) {
+    if (_isHeld) {
+      return 2;
+    }
+    else {
+      return 1;
+    }
+  }
+  else {
+    return 0;
+  }
 }
 

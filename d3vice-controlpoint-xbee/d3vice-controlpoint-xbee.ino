@@ -40,6 +40,7 @@
 // DooM Squad libraries
 #include "Score.h"
 #include "Button.h"
+#include "ButtonManager.h"
 #include "LED.h"
 #include "LightStrip.h"
 #include "Sound.h"
@@ -82,6 +83,7 @@ Controller controller = Controller(&score, &phase);
 Radio radio = Radio(xbee, &phase, &controller);
 Button team0Button = Button(0, button0Pin, &controller);
 Button team1Button = Button(1, button1Pin, &controller);
+ButtonManager buttonManager = ButtonManager(team0Button, team1Button, &phase);
 LED button0LED = LED(0, button0LEDPin, 50, &score, &phase);
 LED button1LED = LED(1, button1LEDPin, 50, &score, &phase);
 LightStrip lightStrip = LightStrip(strip, &score, &phase);
@@ -158,6 +160,7 @@ void loop() {
   // register the appropriate event. (press/release)
   team0Button.update();
   team1Button.update();
+  buttonManager.update();
   
 
   // Update the LEDs based on button presses
