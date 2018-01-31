@@ -50,6 +50,14 @@ SL 40B51A26
 SH 13A200
 SL 408774EC
 
+## Special Thanks
+
+The following people have helped this project in some way, and deserve a mention. Thank you all for helping this project become a reality!
+
+  * [BulldogLowell](https://forum.arduino.cc/index.php?action=profile;u=258955) for helping me with code when I got stuck
+  * [gfvalvo](https://forum.arduino.cc/index.php?action=profile;u=557197) for helping me with code when I got stuck
+  * [Jiggy-Ninja](https://forum.arduino.cc/index.php?action=profile;u=53253) a.k.a. [MarkRD](https://hackaday.io/MarkRD) for helping me with code when I got stuck
+
 ## Todo list
 
   * [x] Fix button debounce issue
