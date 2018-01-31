@@ -72,21 +72,20 @@ void LightStrip::update()
    * Light strip should cycle through colors/patterns which symbolize the game modes
    */
   else if (_phase->getCurrentPhase() == 2) {
-    // @TODO
-//    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
-//      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 25));
-//      _neoPixelStrip.show();
-//    }
-
-      for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
-        _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 0));
-      }
-      if (_phase->getWasSwitchedLastTick() == 1) {
-        _neoPixelStrip.setPixelColor(0, _neoPixelStrip.Color(25, 25, 25));
-      } else {
-        _neoPixelStrip.setPixelColor(1, _neoPixelStrip.Color(52, 1, 63));
-      }
+    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 25));
       _neoPixelStrip.show();
+    }
+
+//      for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+//        _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 0));
+//      }
+//      if (_phase->getWasSwitchedLastTick() == 1) {
+//        _neoPixelStrip.setPixelColor(0, _neoPixelStrip.Color(25, 25, 25));
+//      } else {
+//        _neoPixelStrip.setPixelColor(1, _neoPixelStrip.Color(52, 1, 63));
+//      }
+//      _neoPixelStrip.show();
       
     return;
   }

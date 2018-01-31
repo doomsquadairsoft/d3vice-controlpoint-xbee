@@ -195,6 +195,28 @@ void loop() {
   // @TODO
   // SPEC: 
 
+
+
+  if (team0Button.getState() == 0) {
+    digitalWrite(9, HIGH);
+    delay(10);
+    digitalWrite(9, LOW);
+    delay(60);
+  }
+
+  else if (team0Button.getState() == 1) {
+    digitalWrite(9, HIGH);
+    delay(50);
+    digitalWrite(9, LOW);
+    delay(60);
+  }
+
+  else if (team0Button.getState() == 2) {
+    digitalWrite(9, HIGH);
+    delay(300);
+    digitalWrite(9, LOW);
+    delay(60);
+  }
   
 }
 

@@ -15,8 +15,8 @@ class ButtonManager
     ButtonManager(Button& team0Button, Button& team1Button, Phase* phase);
     void update();
   private:
-    Button _team0Button;
-    Button _team1Button;
+    Button& _team0Button;
+    Button& _team1Button;
     Phase* _phase;
 };
 

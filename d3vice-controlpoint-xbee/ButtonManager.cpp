@@ -12,8 +12,6 @@
 ButtonManager::ButtonManager(Button& team0Button, Button& team1Button, Phase* phase)
 : _team0Button(team0Button), _team1Button(team1Button)
 {
-  _team0Button = team0Button;
-  _team1Button = team1Button;
   _phase = phase;
 }
 
@@ -30,9 +28,15 @@ void ButtonManager::update()
    */
   if (_phase->getCurrentPhase() == 2) {
     // handle both buttons pressed simultaneously
-    if (_team0Button.getState() == 1 && _team1Button.getState() == 1) {
+    if (_team0Button.getState() == 2 && _team1Button.getState() == 2) {
+      digitalWrite(9, HIGH);
+      delay(10000);
+      digitalWrite(9, LOW);
       _phase->advance();
     }
   }
+
+
+  
 }
 

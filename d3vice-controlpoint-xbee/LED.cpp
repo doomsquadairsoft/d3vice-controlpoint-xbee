@@ -30,37 +30,37 @@ LED::LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score* score, 
  */
 void LED::update() {
   
-  // if the button has never been pressed since d3vice start,
-  //   turn on the LED
-  if (_unlitTime == 0) {
-    if (!_isLEDOn) {
-      _isLEDOn = 1;
-      digitalWrite(_ledPin, HIGH);
-    }
-  }
-
-
-
-  // if the button was pressed within the last _duration milliseconds,
-  //   turn off the LED
-  if (millis() - _score->getLastButtonPressTime() < _duration) {
-    if (_score->getControllingTeam() == _teamNumber) {
-      if (_isLEDOn) {
-        _unlitTime = millis(); // save the timestamp at which the LED turned off
-        _isLEDOn = 0;
-        digitalWrite(_ledPin, LOW);
-      }
-    }
-  }
-
-  // if the button has not been pressed within the last _duration milliseconds,
-  //   turn on the LED
-  else if (millis() - _unlitTime > _duration) {
-    if (!_isLEDOn) {
-      _isLEDOn = 1;
-      digitalWrite(_ledPin, HIGH);
-    }
-  }
+//  // if the button has never been pressed since d3vice start,
+//  //   turn on the LED
+//  if (_unlitTime == 0) {
+//    if (!_isLEDOn) {
+//      _isLEDOn = 1;
+//      digitalWrite(_ledPin, HIGH);
+//    }
+//  }
+//
+//
+//
+//  // if the button was pressed within the last _duration milliseconds,
+//  //   turn off the LED
+//  if (millis() - _score->getLastButtonPressTime() < _duration) {
+//    if (_phase->getWasSwitchedLastTick() == 1) {
+//      if (_isLEDOn) {
+//        _unlitTime = millis(); // save the timestamp at which the LED turned off
+//        _isLEDOn = 0;
+//        digitalWrite(_ledPin, LOW);
+//      }
+//    }
+//  }
+//
+//  // if the button has not been pressed within the last _duration milliseconds,
+//  //   turn on the LED
+//  else if (millis() - _unlitTime > _duration) {
+//    if (!_isLEDOn) {
+//      _isLEDOn = 1;
+//      digitalWrite(_ledPin, HIGH);
+//    }
+//  }
   
 
   

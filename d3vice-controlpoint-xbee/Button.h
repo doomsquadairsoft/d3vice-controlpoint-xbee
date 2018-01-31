@@ -18,15 +18,14 @@ class Button
     void processPress();
     void processRelease();
     void processHold();
-    uint8_t getState();
+    int getState();
   private:
-    bool _isPressed;
-    bool _isReleased;
-    bool _isHeld;
+    bool _wasHeld;
     bool _wasPressed;
     bool _teamNumber;
     uint8_t _buttonPin;
-    uint32_t _startPressTime;
+    uint32_t _lastPressTime;
+    uint32_t _lastReleaseTime;
     Controller* _controller;
 };
 
