@@ -62,4 +62,5 @@ The following people have helped this project in some way, and deserve a mention
 
   * [x] Fix button debounce issue
   * [x] Fix endless beep on phase >=1
-  * [ ] Add button hold logic
+  * [x] Add button hold logic
+  * [ ] Implement ButtonManager
