@@ -7,12 +7,13 @@
 #include "Score.h"
 #include "Phase.h"
 
-Button::Button(bool teamNumber, uint8_t buttonPin, Controller* controller)
+Button::Button(bool teamNumber, uint8_t buttonPin, Controller* controller, Score* score)
 {
   pinMode(buttonPin, INPUT);
   _teamNumber = teamNumber;
   _buttonPin = buttonPin;
   _controller = controller;
+  _score = score;
   _wasPressed = 0;
   _wasHeld = 0;
   _lastPressTime = 0;
@@ -69,7 +70,9 @@ void Button::processPress() {
    * Phase 0-- test phase. Button should advance to next phase when pressed
    */
   if (_controller->getCurrentPhase() == 0) {
-    _controller->advancePhase();
+    if (_teamNumber == 0) {
+      _controller->advancePhase();
+    }
     return;
   }
 
@@ -107,10 +110,27 @@ void Button::processPress() {
    */
   else if (_controller->getCurrentPhase() == 3) {
     if (_teamNumber == 0) {
-      //_controller->incrementTimeToWin(60000);
+
+      // @debug
+      for(int i=0; i<5; i++) {
+        digitalWrite(9, HIGH);
+        delay(10);
+        digitalWrite(9, LOW);
+        delay(20);
+      }
+      delay(100);
+      _score->incrementTimeToWin(60000);
     }
     else {
-      //_controller->decrementTimeToWin(60000);
+      // @debug
+      for(int i=0; i<1; i++) {
+        digitalWrite(9, HIGH);
+        delay(50);
+        digitalWrite(9, LOW);
+        delay(20);
+      }
+      delay(100);
+      _score->decrementTimeToWin(60000);
     }
     return;
   }

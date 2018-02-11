@@ -29,9 +29,6 @@ void ButtonManager::update()
   if (_phase->getCurrentPhase() == 2) {
     // handle both buttons pressed simultaneously
     if (_team0Button.getState() == 2 && _team1Button.getState() == 2) {
-      digitalWrite(9, HIGH);
-      delay(10000);
-      digitalWrite(9, LOW);
       _phase->advance();
     }
   }

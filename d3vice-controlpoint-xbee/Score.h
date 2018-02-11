@@ -22,12 +22,17 @@ class Score
     long getTeamScore(bool teamNumber);
     void increment(bool teamNumber, unsigned long duration);
     bool getButtonState(bool buttonNumber);
+    void incrementTimeToWin(unsigned long incrementValue);
+    void decrementTimeToWin(unsigned long decrementValue);
+    unsigned long getTimeToWin();
+    uint16_t getMinutesToWin();
   private:
     long _team0Score;
     long _team1Score;
     bool _controllingTeam;
     long unsigned int _lastButtonPressTime;
     bool _isGameInPlay;
+    unsigned long _ttw;
 };
 
 

@@ -81,12 +81,12 @@ Domination game = Domination(score);
 Controller controller = Controller(&score, &phase);
 
 Radio radio = Radio(xbee, &phase, &controller);
-Button team0Button = Button(0, button0Pin, &controller);
-Button team1Button = Button(1, button1Pin, &controller);
+Button team0Button = Button(0, button0Pin, &controller, &score);
+Button team1Button = Button(1, button1Pin, &controller, &score);
 ButtonManager buttonManager = ButtonManager(team0Button, team1Button, &phase);
 LED button0LED = LED(0, button0LEDPin, 50, &score, &phase);
 LED button1LED = LED(1, button1LEDPin, 50, &score, &phase);
-LightStrip lightStrip = LightStrip(strip, &score, &phase);
+LightStrip lightStrip = LightStrip(strip, score, &phase);
 Sound sound = Sound(buzzerPin, &phase);
 
 
@@ -197,25 +197,16 @@ void loop() {
 
 
 
-  if (team0Button.getState() == 0) {
-    digitalWrite(9, HIGH);
-    delay(10);
-    digitalWrite(9, LOW);
-    delay(60);
+  if (team1Button.getState() == 0) {
+
   }
 
-  else if (team0Button.getState() == 1) {
-    digitalWrite(9, HIGH);
-    delay(50);
-    digitalWrite(9, LOW);
-    delay(60);
+  else if (team1Button.getState() == 1) {
+
   }
 
-  else if (team0Button.getState() == 2) {
-    digitalWrite(9, HIGH);
-    delay(300);
-    digitalWrite(9, LOW);
-    delay(60);
+  else if (team1Button.getState() == 2) {
+
   }
   
 }
@@ -269,37 +260,6 @@ void testSequence() {
 
 
   
-
-  
-//  // see if Phase is working correctly by displaying the
-//  // current phase in binary on the neopixel strip
-//  // beep the buzzer
-//  digitalWrite(buzzerPin, HIGH);
-//  digitalWrite(onboardLEDPin, HIGH);
-//  delay(30);
-//  digitalWrite(buzzerPin, LOW);
-//  digitalWrite(onboardLEDPin, LOW);
-//  delay(70);
-//  
-//  digitalWrite(buzzerPin, HIGH);
-//  digitalWrite(onboardLEDPin, HIGH);
-//  delay(30);
-//  digitalWrite(buzzerPin, LOW);
-//  digitalWrite(onboardLEDPin, LOW);
-//  delay(70);
-//  
-//  digitalWrite(buzzerPin, HIGH);
-//  digitalWrite(onboardLEDPin, HIGH);
-//  delay(30);
-//  digitalWrite(buzzerPin, LOW);
-//  digitalWrite(onboardLEDPin, LOW);
-//  delay(70);
-//  
-//  
-//  strip.setPixelColor(phase.getCurrentPhase(), strip.Color(25, 0, 0));
-//  strip.show();
-//  delay(3000);
-// 
 
 }
 

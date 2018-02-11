@@ -11,6 +11,7 @@ Score::Score()
   _team0Score = 0;
   _team1Score = 0;
   _isGameInPlay = 0;
+  _ttw = 0;
 }
 
 void Score::update()
@@ -72,5 +73,32 @@ void Score::processCaptureEvent(bool teamNumber)
 void Score::increment(bool teamNumber, unsigned long duration)
 {
     
+}
+
+void Score::incrementTimeToWin(unsigned long incrementValue)
+{
+  _ttw += incrementValue;
+}
+
+void Score::decrementTimeToWin(unsigned long decrementValue)
+{
+  if (_ttw - decrementValue >= 0) {
+    _ttw -= decrementValue;
+  }
+  else {
+    _ttw = 0;
+  }
+}
+
+unsigned long Score::getTimeToWin()
+{
+  return 0;
+  //return _ttw;
+}
+
+uint16_t Score::getMinutesToWin()
+{
+  uint16_t minutes = _ttw / 60000;
+  return minutes;
 }
 

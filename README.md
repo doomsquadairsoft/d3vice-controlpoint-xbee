@@ -60,7 +60,10 @@ The following people have helped this project in some way, and deserve a mention
 
 ## Todo list
 
+  * [ ] Fix phase 3 issue where ttw is ???
+  * [ ] Implement XBee
+  * [ ] Implement debugging via XBee wireless link
   * [x] Fix button debounce issue
   * [x] Fix endless beep on phase >=1
   * [x] Add button hold logic
-  * [ ] Implement ButtonManager
+  * [x] Implement ButtonManager
