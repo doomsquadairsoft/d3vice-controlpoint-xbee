@@ -10,7 +10,7 @@
 Button::Button(bool teamNumber, uint8_t buttonPin, Controller* controller, Score* score)
 {
   pinMode(buttonPin, INPUT);
-  _teamNumber = teamNumber;
+  _teamNumber = true;
   _buttonPin = buttonPin;
   _controller = controller;
   _score = score;
@@ -70,8 +70,18 @@ void Button::processPress() {
    * Phase 0-- test phase. Button should advance to next phase when pressed
    */
   if (_controller->getCurrentPhase() == 0) {
-    if (_teamNumber == 0) {
-      _controller->advancePhase();
+    if (_teamNumber) {
+      //_controller->advancePhase();
+      digitalWrite(9, HIGH);
+      delay(10);
+      digitalWrite(9, LOW);
+      delay(20);
+    }
+    else {
+      digitalWrite(9, HIGH);
+      delay(100);
+      digitalWrite(9, LOW);
+      delay(20);
     }
     return;
   }
