@@ -7,10 +7,9 @@
 #include "Score.h"
 #include "Phase.h"
 
-Button::Button(bool teamNumber, uint8_t buttonPin, Controller* controller, Score* score)
+Button::Button(uint8_t teamNumber, uint8_t buttonPin, Controller* controller, Score* score)
 {
-  pinMode(buttonPin, INPUT);
-  _teamNumber = true;
+  _teamNumber = teamNumber;
   _buttonPin = buttonPin;
   _controller = controller;
   _score = score;
@@ -26,6 +25,8 @@ Button::Button(bool teamNumber, uint8_t buttonPin, Controller* controller, Score
  * If the button is pressed, update the controlling team in Score
  */
 void Button::update() {
+
+  
   // if the button was pressed last tick, and it is also pressed this tick, do nothing.
   if (digitalRead(_buttonPin) && _wasPressed) {
 
@@ -70,8 +71,8 @@ void Button::processPress() {
    * Phase 0-- test phase. Button should advance to next phase when pressed
    */
   if (_controller->getCurrentPhase() == 0) {
-    if (_teamNumber) {
-      //_controller->advancePhase();
+    if (_teamNumber == 0) {
+      _controller->advancePhase();
       digitalWrite(9, HIGH);
       delay(10);
       digitalWrite(9, LOW);
@@ -88,62 +89,16 @@ void Button::processPress() {
 
   /**
    * Phase 1-- Hello phase. Button should do nothing when pressed
+   *   phase advancement is handled by the XBee module.
    */
   else if (_controller->getCurrentPhase() == 1) {
     return;
   }
 
 
-  /**
-   * Phase 2-- Programming > Game mode.
-   *   The phase where the type of game is chosen.
-   *   Red button cycles through game modes.
-   *   Green button selects game mode.
-   */
-  else if (_controller->getCurrentPhase() == 2) {
-
-    // Red button cDycles through game modes
-    if (_teamNumber == 0) {
-      // @TODO
-    }
-    else if (_teamNumber == 1) {
-      // @TODO
-    }
-  }
 
 
-  /**
-   * Phase 3-- Programming > Domination > duration.
-   *   This is the phase when the user chooses the total cumulative time a team needs to control the point to win.
-   *   Green button increments the time by 1 minute (up to a maximum of 595 hours)
-   *   Red button decrements the time by 1 minute (down to a minimum of 1 second)
-   */
-  else if (_controller->getCurrentPhase() == 3) {
-    if (_teamNumber == 0) {
 
-      // @debug
-      for(int i=0; i<5; i++) {
-        digitalWrite(9, HIGH);
-        delay(10);
-        digitalWrite(9, LOW);
-        delay(20);
-      }
-      delay(100);
-      _score->incrementTimeToWin(60000);
-    }
-    else {
-      // @debug
-      for(int i=0; i<1; i++) {
-        digitalWrite(9, HIGH);
-        delay(50);
-        digitalWrite(9, LOW);
-        delay(20);
-      }
-      delay(100);
-      _score->decrementTimeToWin(60000);
-    }
-    return;
-  }
 
 
   /**
@@ -200,8 +155,49 @@ void Button::processRelease() {
     
   _wasPressed = 0;
   _wasHeld = 0;
-
   _lastReleaseTime = millis();
+
+
+  for(int i=0; i<1; i++) {
+    digitalWrite(9, HIGH);
+    delay(15);
+    digitalWrite(9, LOW);
+    delay(15);
+  }
+  delay(100);
+
+  
+  /**
+   * Phase 2-- Programming > Game mode.
+   *   The phase where the type of game is chosen.
+   *   Red button cycles upwards through game modes.
+   *   Green button cycles downward through game modes
+   */
+  if (_controller->getCurrentPhase() == 2) {
+    if (_teamNumber == 0) {
+      _score->selectNextGame();
+    }
+    else if (_teamNumber == 1) {
+      _score->selectPreviousGame();
+    }
+  }
+
+
+  /**
+   * Phase 3-- Programming > Domination > duration.
+   *   This is the phase when the user chooses the total cumulative time a team needs to control the point to win.
+   *   Red button decrements the time by 1 minute (down to a minimum of 1 second)
+   *   Green button increments the time by 1 minute (up to a maximum of 595 hours)
+   */
+  else if (_controller->getCurrentPhase() == 3) {
+    if (_teamNumber == 0) {
+      _score->incrementTimeToWin(60000);
+    }
+    else {
+      _score->decrementTimeToWin(60000);
+    }
+  }
+  
 }
 
 

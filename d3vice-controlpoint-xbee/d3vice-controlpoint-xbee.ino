@@ -81,12 +81,12 @@ Domination game = Domination(score);
 Controller controller = Controller(&score, &phase);
 
 Radio radio = Radio(xbee, &phase, &controller);
-Button team0Button = Button(true, button0Pin, &controller, &score);
-Button team1Button = Button(false, button1Pin, &controller, &score);
+Button team0Button = Button(5, button0Pin, &controller, &score);
+Button team1Button = Button(0, button1Pin, &controller, &score);
 ButtonManager buttonManager = ButtonManager(team0Button, team1Button, &phase);
 LED button0LED = LED(0, button0LEDPin, 50, &score, &phase);
 LED button1LED = LED(1, button1LEDPin, 50, &score, &phase);
-LightStrip lightStrip = LightStrip(strip, score, &phase);
+LightStrip lightStrip = LightStrip(strip, &score, &phase);
 Sound sound = Sound(buzzerPin, &phase);
 
 
@@ -114,6 +114,8 @@ void setup() {
   pinMode(button1LEDPin, OUTPUT);
   pinMode(buzzerPin, OUTPUT);
   pinMode(neopixelPin, OUTPUT);
+  pinMode(button0Pin, INPUT);
+  pinMode(button1Pin, INPUT);
   
   Serial.begin(57600);
   xbee.setSerial(Serial);

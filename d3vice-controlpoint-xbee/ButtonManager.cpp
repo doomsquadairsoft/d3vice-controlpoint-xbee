@@ -34,6 +34,20 @@ void ButtonManager::update()
   }
 
 
+  /**
+   * Phase 3-- Programming > Domination > duration.
+   *   The phase when the user chooses the total cumulative time a team needs to control the point to win.
+   *   Green button increments the time by 1 minute (up to a maximum of 595 hours)
+   *   Red button decrements the time by 1 minute (down to a minimum of 1 second)
+   *   Holding both buttons saves the selection and moves to the next phase (game running)
+   */
+   if (_phase->getCurrentPhase() == 2) {
+     if (_team0Button.getState() == 2 && _team1Button.getState() == 2) {
+       _phase->advance();
+     }
+   }
+
+
   
 }
 

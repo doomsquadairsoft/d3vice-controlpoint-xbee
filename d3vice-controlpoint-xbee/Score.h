@@ -24,8 +24,11 @@ class Score
     bool getButtonState(bool buttonNumber);
     void incrementTimeToWin(unsigned long incrementValue);
     void decrementTimeToWin(unsigned long decrementValue);
+    void selectNextGame();
+    void selectPreviousGame();
     unsigned long getTimeToWin();
     uint16_t getMinutesToWin();
+    uint8_t getSelectedGame();
   private:
     long _team0Score;
     long _team1Score;
@@ -33,6 +36,7 @@ class Score
     long unsigned int _lastButtonPressTime;
     bool _isGameInPlay;
     unsigned long _ttw;
+    uint8_t _selectedGame;
 };
 
 

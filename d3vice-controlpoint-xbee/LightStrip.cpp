@@ -9,8 +9,8 @@
 #include "Phase.h"
 
 
-LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score& score, Phase* phase) :
-  _neoPixelStrip(neoPixelStrip), _score(score)
+LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score* score, Phase* phase) :
+  _neoPixelStrip(neoPixelStrip)
 {
   _neoPixelStrip = neoPixelStrip;
   _isStarted = 0;
@@ -71,10 +71,14 @@ void LightStrip::update()
    * Light strip should cycle through colors/patterns which symbolize the game modes
    */
   else if (_phase->getCurrentPhase() == 2) {
-    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
-      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 25));
-      _neoPixelStrip.show();
-    }
+    // if the game mode is domination (0), light up pixels 0 and 8
+      
+    _neoPixelStrip.setPixelColor(_score->getSelectedGame(), _neoPixelStrip.Color(50, 0, 0));
+    _neoPixelStrip.show();
+     
+    
+
+    
 
 //      for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
 //        _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 0));
@@ -104,7 +108,7 @@ void LightStrip::update()
     }
 
     // light one neopixel per each minute in Score::_ttw
-    for (uint16_t i=0; i<((_score.getMinutesToWin())-1); i++) {
+    for (uint16_t i=0; i<((_score->getMinutesToWin())-1); i++) {
       _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(72, 19, 0));
     }
     _neoPixelStrip.show();
@@ -119,14 +123,14 @@ void LightStrip::update()
    * LightStrip should show the controlling team's color
    */
   else if (_phase->getCurrentPhase() == 4) {
-    if (_score.getLastButtonPressTime()) {
+    if (_score->getLastButtonPressTime()) {
       // if team 0 is in control
       //   if team 0 hasn't captured the point within the last 5 seconds,
       //     switch to animation 2
       //   else if team 0 captured the point within the last 5 seconds,
       //     switch to animation 1
-      if (!_score.getControllingTeam()) {
-        if (millis() - _score.getLastButtonPressTime() > 5000) {
+      if (!_score->getControllingTeam()) {
+        if (millis() - _score->getLastButtonPressTime() > 5000) {
           _phase4AnimationState = 2;
         }
         else {
@@ -140,7 +144,7 @@ void LightStrip::update()
       //   else if team 1 captured the point within the last 5 seconds,
       //     switch to animation 3
       else {
-        if (millis() - _score.getLastButtonPressTime() > 5000) {
+        if (millis() - _score->getLastButtonPressTime() > 5000) {
           _phase4AnimationState = 4;
         }
         else {

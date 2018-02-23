@@ -12,6 +12,7 @@ Score::Score()
   _team1Score = 0;
   _isGameInPlay = 0;
   _ttw = 0;
+  _selectedGame = 0;
 }
 
 void Score::update()
@@ -90,6 +91,26 @@ void Score::decrementTimeToWin(unsigned long decrementValue)
   }
 }
 
+void Score::selectNextGame()
+{
+  if (_selectedGame == 7) {
+    _selectedGame = 0;
+  }
+  else {
+    _selectedGame += 1;
+  }
+}
+
+void Score::selectPreviousGame()
+{
+  if (_selectedGame == 0) {
+    _selectedGame = 7;
+  }
+  else {
+    _selectedGame -= 1;
+  }
+}
+
 unsigned long Score::getTimeToWin()
 {
   return 0;
@@ -100,5 +121,10 @@ uint16_t Score::getMinutesToWin()
 {
   uint16_t minutes = _ttw / 60000;
   return minutes;
+}
+
+uint8_t Score::getSelectedGame()
+{
+  return _selectedGame;
 }
 
