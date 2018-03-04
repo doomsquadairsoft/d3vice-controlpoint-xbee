@@ -13,7 +13,7 @@
 class Button
 {
   public:
-    Button(uint8_t teamNumber, uint8_t buttonPin, Controller* controller, Score* score);
+    Button(uint8_t teamNumber, uint8_t buttonPin, Controller& controller, Score& score);
     void update();
     void processPress();
     void processRelease();
@@ -26,8 +26,8 @@ class Button
     uint8_t _buttonPin;
     uint32_t _lastPressTime;
     uint32_t _lastReleaseTime;
-    Controller* _controller;
-    Score* _score;
+    Controller& _controller;
+    Score& _score;
 };
 
 

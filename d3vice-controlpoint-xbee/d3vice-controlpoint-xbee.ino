@@ -47,7 +47,7 @@
 #include "Domination.h"
 #include "Phase.h"
 #include "Controller.h"
-#include "Radio.h"
+//#include "Radio.h"
 
 
 
@@ -80,9 +80,9 @@ Phase phase = Phase();
 Domination game = Domination(score);
 Controller controller = Controller(&score, &phase);
 
-Radio radio = Radio(xbee, &phase, &controller);
-Button team0Button = Button(5, button0Pin, &controller, &score);
-Button team1Button = Button(0, button1Pin, &controller, &score);
+//Radio radio = Radio(xbee, &phase, &controller);
+Button team0Button = Button(5, button0Pin, controller, score);
+Button team1Button = Button(0, button1Pin, controller, score);
 ButtonManager buttonManager = ButtonManager(team0Button, team1Button, &phase);
 LED button0LED = LED(0, button0LEDPin, 50, &score, &phase);
 LED button1LED = LED(1, button1LEDPin, 50, &score, &phase);
@@ -178,7 +178,7 @@ void loop() {
   score.update();
 
   // Update the radio
-  radio.update();
+  //radio.update();
 
   // Update the phase
   // it is important to run this last, after all other modules.
