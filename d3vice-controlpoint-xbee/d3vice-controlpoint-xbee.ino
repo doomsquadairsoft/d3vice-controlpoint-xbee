@@ -78,11 +78,11 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, neopixelPin, NEO_GRB + NEO_KHZ80
 Score score = Score();
 Phase phase = Phase();
 Domination game = Domination(score);
-Controller controller = Controller(&score, &phase);
+//Controller controller = Controller(&score, &phase);
 
 //Radio radio = Radio(xbee, &phase, &controller);
-Button team0Button = Button(5, button0Pin, controller, score);
-Button team1Button = Button(0, button1Pin, controller, score);
+Button team0Button = Button(5, button0Pin, phase, score);
+Button team1Button = Button(0, button1Pin, phase, score);
 ButtonManager buttonManager = ButtonManager(team0Button, team1Button, &phase);
 LED button0LED = LED(0, button0LEDPin, 50, &score, &phase);
 LED button1LED = LED(1, button1LEDPin, 50, &score, &phase);
