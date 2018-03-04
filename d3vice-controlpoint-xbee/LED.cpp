@@ -4,8 +4,8 @@
     #include "WProgram.h"
 #endif
 #include "LED.h"
-#include "Controller.h"
-
+#include "Score.h"
+#include "Phase.h"
 
 LED::LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score* score, Phase* phase)
 {
@@ -19,8 +19,6 @@ LED::LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score* score, 
   _phase = phase;
 }
 
-//Score & LED::_score = _score;
-//Phase & LED::_phase = _phase;
 
 
 /**

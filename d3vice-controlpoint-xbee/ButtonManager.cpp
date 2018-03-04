@@ -9,12 +9,8 @@
 
 
 
-ButtonManager::ButtonManager(Button& team0Button, Button& team1Button, Phase* phase)
-: _team0Button(team0Button), _team1Button(team1Button)
-{
-  _phase = phase;
-}
-
+ButtonManager::ButtonManager(Button& team0Button, Button& team1Button, Phase* phase) : _team0Button(team0Button), _team1Button(team1Button), _phase(phase) {}
+ButtonManager::ButtonManager(Button& team0Button, Button& team1Button, Phase& phase) : _team0Button(team0Button), _team1Button(team1Button), _phase(&phase) {}
 
 void ButtonManager::update()
 {

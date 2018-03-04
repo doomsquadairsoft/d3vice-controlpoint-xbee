@@ -8,17 +8,16 @@
 #endif
 #include <XBee.h>
 #include "Phase.h"
-#include "Controller.h"
+
 
 
 class Radio
 {
   public:
-    Radio(XBee& xbee, Phase* phase, Controller* controller);
+    Radio(XBee& xbee, Phase* phase);
     void update();
   private:
     XBee& _XBee;
-    Controller* _controller;
     Phase* _phase;
 };
 

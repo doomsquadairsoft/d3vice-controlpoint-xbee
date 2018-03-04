@@ -5,16 +5,14 @@
 #endif
 #include "Radio.h"
 #include <XBee.h>
-#include "Controller.h"
 #include "Phase.h"
 
 
-Radio::Radio(XBee& xbee, Phase* phase, Controller* controller) :
+Radio::Radio(XBee& xbee, Phase* phase) :
   _XBee(xbee)
 {
   _XBee = xbee;
   _phase = phase;
-  _controller = controller;
 }
 
 void Radio::update()
@@ -26,7 +24,7 @@ void Radio::update()
     // @todo
 
     // just skip to the next phase because XBee functionality is not implemented yet.
-    _controller->advancePhase();
+    _phase->advance();
   }
 
   // @todo The radio module will need to syncronize with the XBee network during other phases.

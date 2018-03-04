@@ -13,6 +13,7 @@ class ButtonManager
 {
   public:
     ButtonManager(Button& team0Button, Button& team1Button, Phase* phase);
+    ButtonManager(Button& team0Button, Button& team1Button, Phase& phase);
     void update();
   private:
     Button& _team0Button;
