@@ -7,7 +7,8 @@
 #include "Score.h"
 #include "Phase.h"
 
-Button::Button(uint8_t teamNumber, uint8_t buttonPin, Phase& phase, Score& score)
+
+Button::Button(uint8_t teamNumber, uint8_t buttonPin, Phase* phase, Score* score)
 {
   _teamNumber = teamNumber;
   _buttonPin = buttonPin;
@@ -52,7 +53,7 @@ void Button::update() {
 
 
 /**
- * Do the action that the button should perform based on the current phase.
+ * Do the action that the button should perform based on the current phase->
  */
 void Button::processPress() {
 
@@ -67,11 +68,11 @@ void Button::processPress() {
   
   
   /**
-   * Phase 0-- test phase. Button should advance to next phase when pressed
+   * Phase 0-- test phase-> Button should advance to next phase when pressed
    */
-  if (_phase.getCurrentPhase() == 0) {
+  if (_phase->getCurrentPhase() == 0) {
     if (_teamNumber == 0) {
-      _phase.advance();
+      _phase->advance();
       digitalWrite(9, HIGH);
       delay(10);
       digitalWrite(9, LOW);
@@ -87,10 +88,10 @@ void Button::processPress() {
   }
 
   /**
-   * Phase 1-- Hello phase. Button should do nothing when pressed
+   * Phase 1-- Hello phase-> Button should do nothing when pressed
    *   phase advancement is handled by the XBee module.
    */
-  else if (_phase.getCurrentPhase() == 1) {
+  else if (_phase->getCurrentPhase() == 1) {
     return;
   }
 
@@ -107,7 +108,7 @@ void Button::processPress() {
    *   Green button sets team 1 as controlling
    *   Button should set _wasPressed to TRUE, set controlling team in _score, and timestamp now as the button's last press time.
    */
-  else if (_phase.getCurrentPhase() == 4) {
+  else if (_phase->getCurrentPhase() == 4) {
     //_controller->triggerButtonPress(_teamNumber);
   }
 
@@ -120,7 +121,7 @@ void Button::processPress() {
    *   Green button should not respond to presses or releases.
    *   Red and green buttons simultaneously pressed & held for 5 seconds should resume game (switch to Phase 4)
    */
-  else if (_phase.getCurrentPhase() == 5) {
+  else if (_phase->getCurrentPhase() == 5) {
     // @todo
   }
     
@@ -133,7 +134,7 @@ void Button::processPress() {
    *     * reset game scores
    *     * Go to phase 2
    */
-   else if (_phase.getCurrentPhase() == 6) {
+   else if (_phase->getCurrentPhase() == 6) {
      // @todo
    }
 
@@ -147,7 +148,7 @@ void Button::processPress() {
 
 
 /**
- * Do the release action that the button should perform based on the current phase.
+ * Do the release action that the button should perform based on the current phase->
  */
 void Button::processRelease() {
 
@@ -156,14 +157,26 @@ void Button::processRelease() {
   _wasHeld = 0;
   _lastReleaseTime = millis();
 
-
-  for(int i=0; i<1; i++) {
-    digitalWrite(9, HIGH);
-    delay(15);
-    digitalWrite(9, LOW);
-    delay(15);
+  if (_teamNumber == 0) {
+  
+    for(int i=0; i<1; i++) {
+      digitalWrite(9, HIGH);
+      delay(15);
+      digitalWrite(9, LOW);
+      delay(15);
+    }
+    delay(100);
   }
-  delay(100);
+
+  else {
+        for(int i=0; i<1; i++) {
+      digitalWrite(9, HIGH);
+      delay(115);
+      digitalWrite(9, LOW);
+      delay(15);
+    }
+    delay(100);
+  }
 
   
   /**
@@ -172,12 +185,12 @@ void Button::processRelease() {
    *   Red button cycles upwards through game modes.
    *   Green button cycles downward through game modes
    */
-  if (_phase.getCurrentPhase() == 2) {
+  if (_phase->getCurrentPhase() == 2) {
     if (_teamNumber == 0) {
-      _score.selectNextGame();
+      _score->selectNextGame();
     }
     else if (_teamNumber == 1) {
-      _score.selectPreviousGame();
+      _score->selectPreviousGame();
     }
   }
 
@@ -188,12 +201,12 @@ void Button::processRelease() {
    *   Red button decrements the time by 1 minute (down to a minimum of 1 second)
    *   Green button increments the time by 1 minute (up to a maximum of 595 hours)
    */
-  else if (_phase.getCurrentPhase() == 3) {
+  else if (_phase->getCurrentPhase() == 3) {
     if (_teamNumber == 0) {
-      _score.incrementTimeToWin(60000);
+      _score->incrementTimeToWin(60000);
     }
     else {
-      _score.decrementTimeToWin(60000);
+      _score->decrementTimeToWin(60000);
     }
   }
   
@@ -219,7 +232,7 @@ void Button::processHold() {
    *   The phase where the type of game is chosen.
    *   Holding button 0 
    */
-  if (_phase.getCurrentPhase() == 2) {
+  if (_phase->getCurrentPhase() == 2) {
     //
   }
 }
