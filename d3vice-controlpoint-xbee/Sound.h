@@ -14,7 +14,7 @@
 class Sound
 {
   public:
-    Sound(uint8_t buzzerPin, Phase* phase);
+    Sound(uint8_t buzzerPin);
     void asyncMorse(char character);
     void asyncBeep(uint32_t duration);
     void asyncBeep();
@@ -23,7 +23,6 @@ class Sound
     uint8_t _buzzerPin;
     uint32_t _asyncBeepStartTime;
     uint32_t _asyncMorseStartTime;
-    Phase* _phase;
     bool _isAsyncMorseComplete;
     bool _isAsyncBeepComplete;
     uint32_t _morseDitDuration;

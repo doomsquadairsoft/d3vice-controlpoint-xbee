@@ -14,13 +14,13 @@
 class Phase
 {
   public:
-    Phase();
+    Phase(uint8_t phase);
     void advance();
     uint8_t getCurrentPhase();
     bool getWasSwitchedLastTick();
     void update();
   private:
-    uint8_t _phase;
+    int _phase;
     void _advance();
     bool _isSwitchedLastTick;
     bool _isPhaseAdvanceQueued;

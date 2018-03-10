@@ -9,32 +9,19 @@
 #include "Phase.h"
 
 
-LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip, Score* score, Phase* phase) :
+LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip) :
   _neoPixelStrip(neoPixelStrip)
 {
-  _neoPixelStrip = neoPixelStrip;
   _isStarted = 0;
   _breathState = 0;
   _sinIn = 4.712;
   _isInhale = 0;
   _phase4AnimationState = 0;
-  _phase = phase;
 }
 
-void LightStrip::update()
+void LightStrip::show(uint8_t phaseNumber)
 {
 
-//  // debug
-//  for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
-//    _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 0));
-//  }
-//  if (_phase->getWasSwitchedLastTick() == 1) {
-//    _neoPixelStrip.setPixelColor(0, _neoPixelStrip.Color(25, 25, 25));
-//  } else {
-//    _neoPixelStrip.setPixelColor(1, _neoPixelStrip.Color(17, 0, 21));
-//  }
-//  _neoPixelStrip.show();
-//  return;
   
   /**
    * Phase 0
@@ -42,7 +29,7 @@ void LightStrip::update()
    * Test phase
    * LightStrip should cycle through RGB colors to show all pixels are functioning properly
    */
-  if (_phase->getCurrentPhase() == 0) {
+  if (phaseNumber == 0) {
     // @TODO
     for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
       _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(25, 0, 0));
@@ -56,7 +43,7 @@ void LightStrip::update()
    * Hello phase
    * LightStrip should do nothing
    */
-  else if (_phase->getCurrentPhase() == 1) {
+  else if (phaseNumber == 1) {
     for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
       _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 25, 0));
       _neoPixelStrip.show();
@@ -70,10 +57,10 @@ void LightStrip::update()
    * Programming > Game mode
    * Light strip should cycle through colors/patterns which symbolize the game modes
    */
-  else if (_phase->getCurrentPhase() == 2) {
+  else if (phaseNumber == 2) {
     // if the game mode is domination (0), light up pixels 0 and 8
       
-    _neoPixelStrip.setPixelColor(_score->getSelectedGame(), _neoPixelStrip.Color(50, 0, 0));
+    _neoPixelStrip.setPixelColor(2, _neoPixelStrip.Color(50, 0, 0));
     _neoPixelStrip.show();
      
     
@@ -99,7 +86,7 @@ void LightStrip::update()
    * Programming > Domination > duration
    * LightStrip should display the user selected duration in ~~binary~~ a progress bar
    */
-  else if (_phase->getCurrentPhase() == 3) {
+  else if (phaseNumber == 3) {
 
 
     // clear all neopixels
@@ -108,7 +95,7 @@ void LightStrip::update()
     }
 
     // light one neopixel per each minute in Score::_ttw
-    for (uint16_t i=0; i<((_score->getMinutesToWin())-1); i++) {
+    for (uint16_t i=0; i<(6); i++) {
       _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(72, 19, 0));
     }
     _neoPixelStrip.show();
@@ -122,15 +109,16 @@ void LightStrip::update()
    * Domination Game Run
    * LightStrip should show the controlling team's color
    */
-  else if (_phase->getCurrentPhase() == 4) {
-    if (_score->getLastButtonPressTime()) {
+  else if (phaseNumber == 4) {
+     // @todo set lights based on which team is in control
+    if (1) {
       // if team 0 is in control
       //   if team 0 hasn't captured the point within the last 5 seconds,
       //     switch to animation 2
       //   else if team 0 captured the point within the last 5 seconds,
       //     switch to animation 1
-      if (!_score->getControllingTeam()) {
-        if (millis() - _score->getLastButtonPressTime() > 5000) {
+      if (1) {
+        if (1) {
           _phase4AnimationState = 2;
         }
         else {
@@ -144,7 +132,7 @@ void LightStrip::update()
       //   else if team 1 captured the point within the last 5 seconds,
       //     switch to animation 3
       else {
-        if (millis() - _score->getLastButtonPressTime() > 5000) {
+        if (1 > 5000) {
           _phase4AnimationState = 4;
         }
         else {
@@ -166,7 +154,7 @@ void LightStrip::update()
    *   * red blinking progress bar
    *   * Yellow blinking(?) maybe maybe not
    */
-  else if (_phase->getCurrentPhase() == 5) {
+  else if (phaseNumber == 5) {
     // @TODO
     for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
       _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(52, 4, 101));
@@ -180,7 +168,7 @@ void LightStrip::update()
    * Domination game won
    * LightStrip should display a steady blinking color of the winning team
    */
-  else if (_phase->getCurrentPhase() == 6) {
+  else if (phaseNumber == 6) {
     // @TODO
     for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
       _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(33, 89, 138));

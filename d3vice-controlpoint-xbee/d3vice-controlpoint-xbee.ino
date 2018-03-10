@@ -40,19 +40,19 @@
 // DooM Squad libraries
 #include "Score.h"
 #include "Button.h"
-#include "ButtonManager.h"
 #include "LED.h"
 #include "LightStrip.h"
 #include "Sound.h"
 #include "Domination.h"
 #include "Phase.h"
-//#include "Radio.h"
-
+#include "Radio.h"
+#include "Tiesto.h"
+//#include "Device.h"
 
 
 // pin definitions
-#define button0Pin 4
-#define button1Pin 7
+#define button0Pin 7
+#define button1Pin 4
 #define button0LEDPin 10
 #define button1LEDPin 11
 #define onboardLEDPin 13
@@ -75,18 +75,20 @@ XBee xbee = XBee();
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, neopixelPin, NEO_GRB + NEO_KHZ800);
 
 Score score = Score();
-Phase phase = Phase();
+Phase phase = Phase(0);
 Domination game = Domination(score);
 
-//Radio radio = Radio(xbee, &phase, &controller);
-Button team0Button = Button(5, button0Pin, &phase, &score);
-Button team1Button = Button(0, button1Pin, &phase, &score);
-ButtonManager buttonManager = ButtonManager(team0Button, team1Button, phase);
-LED button0LED = LED(0, button0LEDPin, 50, &score, &phase);
-LED button1LED = LED(1, button1LEDPin, 50, &score, &phase);
-LightStrip lightStrip = LightStrip(strip, &score, &phase);
-Sound sound = Sound(buzzerPin, &phase);
 
+// Device::Device(numberOfButtons, buzzerPin, strip, xbee)
+//Device device = Device(1, buzzerPin, strip, xbee);
+
+//Radio radio = Radio(xbee);
+Button team0Button = Button(0, button0Pin);
+Button team1Button = Button(1, button1Pin);
+LED button0LED = LED(0, button0LEDPin, 50);
+LED button1LED = LED(1, button1LEDPin, 50);
+LightStrip lightStrip = LightStrip(strip);
+Sound sound = Sound(buzzerPin);
 
 
 // configuration of the team's color (for neopixels)
@@ -116,7 +118,7 @@ void setup() {
   pinMode(button1Pin, INPUT);
   
   Serial.begin(57600);
-  xbee.setSerial(Serial);
+  //xbee.setSerial(Serial);
   
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
@@ -147,68 +149,133 @@ void setup() {
   
 }
 
+
+
+
+
 /** 
  *  
  * Main loop. One pass through the loop is called a "tick"
  * 
  */
-void loop() {
+void loop()
+{
 
-
-  
-  // If either team has pressed their button,
-  // register the appropriate event. (press/release)
+  // poll pushbuttons for activity
   team0Button.update();
   team1Button.update();
-  buttonManager.update();
-  
-
-  // Update the LEDs based on button presses
-  // and the controlling team
-  button0LED.update();
-  button1LED.update();
-  lightStrip.update();
-
-  // Update the buzzer based on button presses
-  sound.update();
-
-  // Update the score based on the controlling team
-  score.update();
-
-  // Update the radio
-  //radio.update();
-
-  // Update the phase
-  // it is important to run this last, after all other modules.
-  // Phase::update() handles resetting Phase::_isSwitchedLastTick to 0,
-  // an important boolean which ensures proper buzzer operation
   phase.update();
 
+  for (uint8_t i=0; i<(phase.getCurrentPhase()+3); i++) {
+    digitalWrite(9, HIGH);
+    delay(20);
+    digitalWrite(9, LOW);
+    delay(150);
+  }
+  delay(1000);
 
-  // @TODO XBee (wireless) stuff
-  // SPEC: When D3VICE starts up, send HELLO out to network
-  //       This is used by the gateway to sync the D3VICE's state with gamestate in case
-  //       it rebooted during a game.
-
-
-
-  // @TODO
-  // SPEC: 
-
-
-
-  if (team1Button.getState() == 0) {
-
+  // do stuff based on the current phase
+  if (phase.getCurrentPhase() == 0) {
+    lightStrip.show(0);
   }
 
-  else if (team1Button.getState() == 1) {
-
+  else if (phase.getCurrentPhase() == 1) {
+    lightStrip.show(1);
   }
 
-  else if (team1Button.getState() == 2) {
+  else if (phase.getCurrentPhase() == 2) {
+    lightStrip.show(2);
+  }
 
+  else if (phase.getCurrentPhase() == 3) {
+    lightStrip.show(3);
+  }
+
+  else if (phase.getCurrentPhase() == 4) {
+    lightStrip.show(4);
   }
   
+  else if (phase.getCurrentPhase() == 5) {
+    lightStrip.show(5);
+  }
+  
+  else if (phase.getCurrentPhase() == 6) {
+    lightStrip.show(6);
+  }
+
+
+  
+
+  
+//  for (int i=0; i<17; i++) {
+//    digitalWrite(9, HIGH);
+//    delay(50);
+//    digitalWrite(9, LOW);
+//    delay(50);
+//  }
+//
+//  delay(2000);
+//
+//  
+//  for (uint8_t i=0; i<phase.getCurrentPhase(); i++) {
+//    digitalWrite(9, HIGH);
+//    delay(20);
+//    digitalWrite(9, LOW);
+//    delay(200);
+//  }
+//
+//  delay(2000);
+//
+//  digitalWrite(9, HIGH);
+//  delay(1000);
+//  digitalWrite(9, LOW);
+//  delay(1000);
+
+
+
+  if (team1Button.getState() == 2) {
+    for (uint8_t i=0; i<3; i++) {
+      digitalWrite(9, HIGH);
+      delay(20);
+      digitalWrite(9, LOW);
+      delay(200);
+    }
+    delay(1000);
+  }
+
+  
+
+   /**
+   * Phase 2-- Programming > Game mode.
+   *   The phase where the type of game is chosen.
+   *   Red button cycle forward through game modes
+   *   Green button cycles backward throu game mode
+   *   Both buttons held together advance to next phase
+   */
+  if (phase.getCurrentPhase() == 0) {
+    // handle both buttons pressed simultaneously
+    if (team0Button.getState() == 2 && team1Button.getState() == 2) {
+      digitalWrite(9, HIGH);
+      delay(2000);
+      digitalWrite(9, LOW);
+      phase.advance();
+    }
+  }
+
+
+  /**
+   * Phase 3-- Programming > Domination > duration.
+   *   The phase when the user chooses the total cumulative time a team needs to control the point to win.
+   *   Green button increments the time by 1 minute (up to a maximum of 595 hours)
+   *   Red button decrements the time by 1 minute (down to a minimum of 1 second)
+   *   Holding both buttons saves the selection and moves to the next phase (game running)
+   */
+   if (phase.getCurrentPhase() == 0) {
+     if (team0Button.getState() == 2 && team1Button.getState() == 2) {
+       phase.advance();
+     }
+   }
+
 }
 
 

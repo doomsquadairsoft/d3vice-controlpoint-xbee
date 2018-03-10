@@ -30,9 +30,8 @@
  *   Phase 6-- Domination > Win
  *   
  */
-Phase::Phase()
+Phase::Phase(uint8_t phase) : _phase(phase)
 {
-  _phase = 0;
   _isSwitchedLastTick = 1; // starts as 1 so other classes know phase 0 just started
   _isPhaseAdvanceQueued = 0;
 }
@@ -44,6 +43,8 @@ Phase::Phase()
  */
 void Phase::advance()
 {
+
+  
   _isPhaseAdvanceQueued = 1;
   return;
 }
@@ -69,6 +70,7 @@ void Phase::update()
     _isPhaseAdvanceQueued = 0;
     _advance();
   }
+
 }
 
 /**

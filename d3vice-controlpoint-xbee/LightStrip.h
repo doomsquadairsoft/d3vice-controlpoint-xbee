@@ -14,14 +14,13 @@
 class LightStrip
 {
   public:
-    LightStrip(Adafruit_NeoPixel& neoPixel, Score* score, Phase* phase);
+    LightStrip(Adafruit_NeoPixel& neoPixel);
     void update();
+    void show(uint8_t phaseNumber);
   private:
     void _animatePhase4();
     uint8_t _pulsate(uint8_t breathState);
     Adafruit_NeoPixel& _neoPixelStrip;
-    Score* _score;
-    Phase* _phase;
     bool _isStarted;
     bool _isInhale;
     uint8_t _breathState;

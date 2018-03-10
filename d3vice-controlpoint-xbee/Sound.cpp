@@ -7,11 +7,7 @@
 #include "Phase.h"
 
 
-Sound::Sound(uint8_t buzzerPin, Phase* phase)
-{
-  _buzzerPin = buzzerPin;
-  _phase = phase;
-}
+Sound::Sound(uint8_t buzzerPin) : _buzzerPin(buzzerPin) {}
 
 
 
@@ -24,9 +20,7 @@ void Sound::update()
 
   // if this is the first tick of a new phase
   //   start beeping
-  if (_phase->getWasSwitchedLastTick() == 1) {
-    asyncBeep(100);
-  }
+  // @todo
   
 }
 

@@ -12,7 +12,7 @@
 class LED
 {
   public:
-    LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score* score, Phase* phase);
+    LED(bool teamNumber, uint8_t ledPin, unsigned long duration);
     void update();
   private:
     bool _teamNumber;
@@ -20,8 +20,6 @@ class LED
     uint8_t _ledPin;
     unsigned long _unlitTime;
     unsigned long _duration;
-    Score* _score;
-    Phase* _phase;
 };
 
 #endif

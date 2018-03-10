@@ -14,11 +14,10 @@
 class Radio
 {
   public:
-    Radio(XBee& xbee, Phase* phase);
+    Radio(XBee& xbee);
     void update();
   private:
     XBee& _XBee;
-    Phase* _phase;
 };
 
 #endif

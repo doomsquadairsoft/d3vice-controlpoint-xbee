@@ -7,7 +7,7 @@
 #include "Score.h"
 #include "Phase.h"
 
-LED::LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score* score, Phase* phase)
+LED::LED(bool teamNumber, uint8_t ledPin, unsigned long duration)
 {
   pinMode(ledPin, OUTPUT);
   _ledPin = ledPin;
@@ -15,8 +15,6 @@ LED::LED(bool teamNumber, uint8_t ledPin, unsigned long duration, Score* score, 
   _duration = duration;
   _isLEDOn = 0;
   _unlitTime = 0;
-  _score = score;
-  _phase = phase;
 }
 
 
