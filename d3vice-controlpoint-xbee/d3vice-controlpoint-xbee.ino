@@ -47,6 +47,7 @@
 #include "Phase.h"
 #include "Radio.h"
 //#include "Device.h"
+#include "GameMode.h"
 
 
 // pin definitions
@@ -57,6 +58,7 @@
 #define onboardLEDPin 13
 #define neopixelPin 12
 #define buzzerPin 9
+
 
 
 
@@ -88,6 +90,10 @@ LED button0LED = LED(0, button0LEDPin, 50);
 LED button1LED = LED(1, button1LEDPin, 50);
 LightStrip lightStrip = LightStrip(strip);
 Sound sound = Sound(buzzerPin);
+GameMode gameMode = GameMode(0);
+
+
+
 
 
 // configuration of the team's color (for neopixels)
@@ -102,6 +108,16 @@ long team1controlTime = 0;
 
 // variable for showing whether or not game is deriving initial state from XBee network
 bool isNetworkGame;
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -152,6 +168,12 @@ void setup() {
 
 
 
+
+
+
+
+
+
 /** 
  *  
  * Main loop. One pass through the loop is called a "tick"
@@ -167,86 +189,88 @@ void loop()
   sound.update();
 
 
-  // do stuff based on the current phase
-  if (phase.getCurrentPhase() == 0) {
-    lightStrip.show(0);
-  }
-
-  else if (phase.getCurrentPhase() == 1) {
-    lightStrip.show(1);
-  }
-
-  else if (phase.getCurrentPhase() == 2) {
-    lightStrip.show(2);
-  }
-
-  else if (phase.getCurrentPhase() == 3) {
-    lightStrip.show(3);
-  }
-
-  else if (phase.getCurrentPhase() == 4) {
-    lightStrip.show(4);
-  }
-  
-  else if (phase.getCurrentPhase() == 5) {
-    lightStrip.show(5);
-  }
-  
-  else if (phase.getCurrentPhase() == 6) {
-    lightStrip.show(6);
-  }
 
 
-  
-
-  
-//  for (int i=0; i<17; i++) {
-//    digitalWrite(9, HIGH);
-//    delay(50);
-//    digitalWrite(9, LOW);
-//    delay(50);
-//  }
-//
-//  delay(2000);
-//
-//  
-//  for (uint8_t i=0; i<phase.getCurrentPhase(); i++) {
-//    digitalWrite(9, HIGH);
-//    delay(20);
-//    digitalWrite(9, LOW);
-//    delay(200);
-//  }
-//
-//  delay(2000);
-//
-//  digitalWrite(9, HIGH);
-//  delay(1000);
-//  digitalWrite(9, LOW);
-//  delay(1000);
 
 
-   // do things if the phase just changed
+   /** 
+    *  
+    *  do things if the phase just changed
+    */
    if (phase.getWasSwitchedLastTick()) {
       team0Button.lock();
       team1Button.lock();
       sound.asyncBeep(150);
    }
+   
 
 
-   /**
-   * Phase 2-- Programming > Game mode.
-   *   The phase where the type of game is chosen.
-   *   Red button cycle forward through game modes
-   *   Green button cycles backward throu game mode
-   *   Both buttons held together advance to next phase
+  /** 
+   * do stuff based on the current phase
+   * 
+   */
+
+  /**
+   * Phase 0-- Test phase
+   * 
+   * D3VICE does a self-check
+   * User can watch d3vice and see/hear if any of the display/sound elements aren't working
    */
   if (phase.getCurrentPhase() == 0) {
+    lightStrip.show(0, 0);
+
+    
     // handle both buttons pressed simultaneously
     if (team0Button.getState() == 2 && team1Button.getState() == 2) {
       phase.advance();
-      
-
     }
+  }
+
+
+
+
+
+  
+  
+  /**
+   * Phase 1-- HELLO Phase
+   * 
+   *   XBee Radio contacts the network and synconizes with remote game state (if any)
+   */
+  if (phase.getCurrentPhase() == 1) {
+   lightStrip.show(1, 0);
+   if (team0Button.getState() == 2 && team1Button.getState() == 2) {
+     phase.advance();
+   }
+  }
+
+
+
+
+
+  /**
+   * Phase 2-- Game mode select
+   * 
+   * User presses buttons to cycle between the available game modes
+   * User holds both buttons simultaneously to advance to next phase
+   * 
+   */
+  else if (phase.getCurrentPhase() == 2) {
+    
+    // if the team 0 button was just released (short press)
+    // increment the selected game mode
+    if (team0Button.wasPressReleasedLastTick()) {
+      gameMode.increment();
+    }
+
+    // if the team 1 button was just released (short press)
+    // decrement the selected game mode
+    else if (team1Button.wasPressReleasedLastTick()) {
+      gameMode.decrement();
+    }
+
+    // display the selected game mode on the neopixels
+    lightStrip.show(2, gameMode.get());
   }
 
 
@@ -257,11 +281,44 @@ void loop()
    *   Red button decrements the time by 1 minute (down to a minimum of 1 second)
    *   Holding both buttons saves the selection and moves to the next phase (game running)
    */
-   if (phase.getCurrentPhase() == 1) {
-     if (team0Button.getState() == 2 && team1Button.getState() == 2) {
-       phase.advance();
-     }
-   }
+  else if (phase.getCurrentPhase() == 3) {
+    lightStrip.show(3, 0);
+  }
+
+
+
+
+
+
+  /**
+   * Phase 4-- Dominatino game is running
+   */
+  else if (phase.getCurrentPhase() == 4) {
+    lightStrip.show(4, 0);
+  }
+
+
+
+  /**
+   * Phase 5-- Domination game is paused
+   */
+  else if (phase.getCurrentPhase() == 5) {
+    lightStrip.show(5, 0);
+  }
+
+
+
+
+  /**
+   * Phase 6-- Domination game is won
+   */
+  else if (phase.getCurrentPhase() == 6) {
+    lightStrip.show(6, 0);
+  }
+
+
+  
+
 
 }
 

@@ -19,7 +19,7 @@ LightStrip::LightStrip(Adafruit_NeoPixel& neoPixelStrip) :
   _phase4AnimationState = 0;
 }
 
-void LightStrip::show(uint8_t phaseNumber)
+void LightStrip::show(uint8_t phaseNumber, uint8_t parameter)
 {
 
   
@@ -59,11 +59,19 @@ void LightStrip::show(uint8_t phaseNumber)
    */
   else if (phaseNumber == 2) {
     // if the game mode is domination (0), light up pixels 0 and 8
-    
+
+    // Clear all neopixels
     for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
-      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 25));
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 0));
+    }
+
+
+    // Display the selected game mode. Each pixel symbolizes a game mode.
+    if (parameter <= _neoPixelStrip.numPixels()) {
+      _neoPixelStrip.setPixelColor(parameter, _neoPixelStrip.Color(0, 0, 25));
       _neoPixelStrip.show();
     }
+
     return;
     
 

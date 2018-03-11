@@ -16,7 +16,7 @@ class LightStrip
   public:
     LightStrip(Adafruit_NeoPixel& neoPixel);
     void update();
-    void show(uint8_t phaseNumber);
+    void show(uint8_t phaseNumber, uint8_t parameter);
   private:
     void _animatePhase4();
     uint8_t _pulsate(uint8_t breathState);

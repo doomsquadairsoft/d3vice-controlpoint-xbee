@@ -15,14 +15,19 @@ class Button
     Button(uint8_t teamNumber, uint8_t buttonPin);
     void update();
     void processPress();
-    void processRelease();
+    void processPressRelease();
+    void processHoldRelease();
     void processHold();
     void lock();
+    bool wasHoldReleasedLastTick();
+    bool wasPressReleasedLastTick();
     int getState();
   private:
     bool _wasHeld;
     bool _wasPressed;
     bool _isLocked;
+    bool _wasPressReleasedLastTick;
+    bool _wasHoldReleasedLastTick;
     uint8_t _teamNumber;
     uint8_t _buttonPin;
     uint32_t _lastPressTime;

@@ -26,6 +26,10 @@ Button::Button(uint8_t teamNumber, uint8_t buttonPin)
  */
 void Button::update() {
 
+  // reset toggle variables which only last for 1 tick
+  if (_wasPressReleasedLastTick) { _wasPressReleasedLastTick = 0; }
+  if (_wasHoldReleasedLastTick) { _wasHoldReleasedLastTick = 0; }
+
   
   // if the button was pressed last tick, and it is also pressed this tick, do nothing.
   if (digitalRead(_buttonPin) && _wasPressed) {
@@ -43,9 +47,14 @@ void Button::update() {
     processPress();
   }
 
-  // if the button is not pressed this tick, but was pressed last tick, process release.
+  // if the button is not pressed this tick, but was pressed last tick, process press release.
   else if (!digitalRead(_buttonPin) && _wasPressed) {
-    processRelease();
+    processPressRelease();
+  }
+
+  // if the button is not pressed this tick, but was held last tick, process hold release.
+  else if (!digitalRead(_buttonPin) && _wasHeld) {
+    processHoldRelease();
   }
 
   
@@ -87,13 +96,14 @@ void Button::processPress() {
 /**
  * Do the release action that the button should perform based on the current phase->
  */
-void Button::processRelease() {
+void Button::processPressRelease() {
 
     
   _wasPressed = 0;
   _wasHeld = 0;
   _lastReleaseTime = millis();
   _isLocked = 0;
+  _wasPressReleasedLastTick = 1;
 
 //  if (_teamNumber == 0) {
 //  
@@ -117,6 +127,15 @@ void Button::processRelease() {
 //  }
 
   
+}
+
+
+void Button::processHoldRelease() {
+  _wasPressed = 0;
+  _wasHeld = 0;
+  _lastReleaseTime = millis();
+  _isLocked = 0;
+  _wasHoldReleasedLastTick = 1;
 }
 
 
@@ -182,5 +201,24 @@ int Button::getState() {
 void Button::lock()
 {
   _isLocked = 1;
+}
+
+
+
+
+
+bool Button::wasPressReleasedLastTick()
+{
+  return _wasPressReleasedLastTick;
+}
+
+bool Button::wasHoldReleasedLastTick()
+{
+  if (_wasHoldReleasedLastTick) {
+    return 1;
+  }
+  else {
+    return 0;
+  }
 }
 
