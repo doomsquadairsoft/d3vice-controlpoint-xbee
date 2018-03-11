@@ -46,7 +46,6 @@
 #include "Domination.h"
 #include "Phase.h"
 #include "Radio.h"
-#include "Tiesto.h"
 //#include "Device.h"
 
 
@@ -165,14 +164,8 @@ void loop()
   team0Button.update();
   team1Button.update();
   phase.update();
+  sound.update();
 
-  for (uint8_t i=0; i<(phase.getCurrentPhase()+3); i++) {
-    digitalWrite(9, HIGH);
-    delay(20);
-    digitalWrite(9, LOW);
-    delay(150);
-  }
-  delay(1000);
 
   // do stuff based on the current phase
   if (phase.getCurrentPhase() == 0) {
@@ -232,18 +225,13 @@ void loop()
 //  delay(1000);
 
 
+   // do things if the phase just changed
+   if (phase.getWasSwitchedLastTick()) {
+      team0Button.lock();
+      team1Button.lock();
+      sound.asyncBeep(150);
+   }
 
-  if (team1Button.getState() == 2) {
-    for (uint8_t i=0; i<3; i++) {
-      digitalWrite(9, HIGH);
-      delay(20);
-      digitalWrite(9, LOW);
-      delay(200);
-    }
-    delay(1000);
-  }
-
-  
 
    /**
    * Phase 2-- Programming > Game mode.
@@ -255,10 +243,9 @@ void loop()
   if (phase.getCurrentPhase() == 0) {
     // handle both buttons pressed simultaneously
     if (team0Button.getState() == 2 && team1Button.getState() == 2) {
-      digitalWrite(9, HIGH);
-      delay(2000);
-      digitalWrite(9, LOW);
       phase.advance();
+      
+
     }
   }
 
@@ -270,7 +257,7 @@ void loop()
    *   Red button decrements the time by 1 minute (down to a minimum of 1 second)
    *   Holding both buttons saves the selection and moves to the next phase (game running)
    */
-   if (phase.getCurrentPhase() == 0) {
+   if (phase.getCurrentPhase() == 1) {
      if (team0Button.getState() == 2 && team1Button.getState() == 2) {
        phase.advance();
      }

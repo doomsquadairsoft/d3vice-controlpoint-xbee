@@ -42,9 +42,7 @@ Phase::Phase(uint8_t phase) : _phase(phase)
  * queues a phase advancement to happen during the next run of Phase::update()
  */
 void Phase::advance()
-{
-
-  
+{  
   _isPhaseAdvanceQueued = 1;
   return;
 }
@@ -62,7 +60,7 @@ bool Phase::getWasSwitchedLastTick()
 
 void Phase::update()
 {
-  if (_isSwitchedLastTick == 1) {
+  if (_isSwitchedLastTick) {
     _isSwitchedLastTick = 0;
   }
 

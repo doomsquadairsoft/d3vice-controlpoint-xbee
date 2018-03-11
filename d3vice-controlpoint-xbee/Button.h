@@ -17,10 +17,12 @@ class Button
     void processPress();
     void processRelease();
     void processHold();
+    void lock();
     int getState();
   private:
     bool _wasHeld;
     bool _wasPressed;
+    bool _isLocked;
     uint8_t _teamNumber;
     uint8_t _buttonPin;
     uint32_t _lastPressTime;

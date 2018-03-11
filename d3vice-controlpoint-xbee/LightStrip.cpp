@@ -59,12 +59,12 @@ void LightStrip::show(uint8_t phaseNumber)
    */
   else if (phaseNumber == 2) {
     // if the game mode is domination (0), light up pixels 0 and 8
-      
-    _neoPixelStrip.setPixelColor(2, _neoPixelStrip.Color(50, 0, 0));
-    _neoPixelStrip.show();
-     
     
-
+    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 25));
+      _neoPixelStrip.show();
+    }
+    return;
     
 
 //      for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {

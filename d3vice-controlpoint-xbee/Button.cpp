@@ -16,6 +16,7 @@ Button::Button(uint8_t teamNumber, uint8_t buttonPin)
   _wasHeld = 0;
   _lastPressTime = 0;
   _lastReleaseTime = 0;
+  _isLocked = 0;
 }
 
 /**
@@ -47,6 +48,8 @@ void Button::update() {
     processRelease();
   }
 
+  
+
 
 }
 
@@ -72,7 +75,6 @@ void Button::processPress() {
 
   // set a start press time to later be used to determine if the button is being held (multi-button press&hold functionality)
   _lastPressTime = millis();
-  
 
    
 }
@@ -91,27 +93,28 @@ void Button::processRelease() {
   _wasPressed = 0;
   _wasHeld = 0;
   _lastReleaseTime = millis();
+  _isLocked = 0;
 
-  if (_teamNumber == 0) {
-  
-    for(int i=0; i<1; i++) {
-      digitalWrite(9, HIGH);
-      delay(15);
-      digitalWrite(9, LOW);
-      delay(15);
-    }
-    delay(100);
-  }
-
-  else {
-        for(int i=0; i<1; i++) {
-      digitalWrite(9, HIGH);
-      delay(115);
-      digitalWrite(9, LOW);
-      delay(15);
-    }
-    delay(100);
-  }
+//  if (_teamNumber == 0) {
+//  
+//    for(int i=0; i<1; i++) {
+//      digitalWrite(9, HIGH);
+//      delay(15);
+//      digitalWrite(9, LOW);
+//      delay(15);
+//    }
+//    delay(100);
+//  }
+//
+//  else {
+//        for(int i=0; i<1; i++) {
+//      digitalWrite(9, HIGH);
+//      delay(115);
+//      digitalWrite(9, LOW);
+//      delay(15);
+//    }
+//    delay(100);
+//  }
 
   
 }
@@ -140,11 +143,16 @@ void Button::processHold() {
  * 0 released
  * 1 pressed
  * 2 held
+ * 3 locked
  */
 int Button::getState() {
+
+  if (_isLocked) {
+    return 3;
+  }
   
   // if the latest press was more recent than the latest release, the button is physically pressed
-  if (digitalRead(_buttonPin) == HIGH) {
+  else if (digitalRead(_buttonPin) == HIGH) {
 
     // if the button has been pressed for less than 1000 ms, consider it pressed
     if (millis() - _lastPressTime < 1000) {
@@ -161,5 +169,18 @@ int Button::getState() {
   else {
     return 0;
   }
+}
+
+
+/**
+ * Prevent Button from returning anything except state 3.
+ * Avoids problem where a press and hold triggers two phase changes rapid-fire.
+ * Call this after the desired action was performed.
+ * No other action can occur until button state 0 (button not pressed) occurs.
+ * 
+ */
+void Button::lock()
+{
+  _isLocked = 1;
 }
 
