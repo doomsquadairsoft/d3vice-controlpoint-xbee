@@ -38,7 +38,6 @@
 #include <XBee.h>
 
 // DooM Squad libraries
-#include "Score.h"
 #include "Button.h"
 #include "LED.h"
 #include "LightStrip.h"
@@ -48,6 +47,7 @@
 #include "Radio.h"
 //#include "Device.h"
 #include "GameMode.h"
+#include "Duration.h"
 
 
 // pin definitions
@@ -91,6 +91,7 @@ LED button1LED = LED(1, button1LEDPin, 50);
 LightStrip lightStrip = LightStrip(strip);
 Sound sound = Sound(buzzerPin);
 GameMode gameMode = GameMode(0);
+Duration duration = Duration(15);
 
 
 
@@ -269,9 +270,30 @@ void loop()
       gameMode.decrement();
     }
 
+    // if both buttons are held at once, advance to appropriate phase
+    // based on the selected game mode.
+    else if (team0Button.getState() == 2 && team1Button.getState() == 2) {
+
+      
+      // if Domination (0) was selected, go to phase 3
+      if (gameMode.get() == 0) {
+        phase.goTo(3);
+      }
+
+      // if Diffusal (1) was selected, go to phase 12
+      else if (gameMode.get() == 1) {
+        phase.goTo(12);
+      }
+    }
+
     // display the selected game mode on the neopixels
     lightStrip.show(2, gameMode.get());
   }
+
+
+
+
+
 
 
   /**
@@ -317,7 +339,76 @@ void loop()
   }
 
 
-  
+
+  /**
+   * Phase 12-- Diffusal select duration
+   * 
+   *   User presses button 0 to increment timer
+   *   User presses button 1 to decrement timer
+   */
+  else if (phase.getCurrentPhase() == 12) {
+    
+    // if the team 0 button was just released (short press)
+    // increment the selected game mode
+    if (team0Button.wasPressReleasedLastTick()) {
+      duration.increment();
+    }
+
+    // if the team 1 button was just released (short press)
+    // decrement the selected game mode
+    else if (team1Button.wasPressReleasedLastTick()) {
+      duration.decrement();
+    }
+
+    // if both buttons are held at once, advance to Diffusal paused phase
+    else if (team0Button.getState() == 2 && team1Button.getState() == 2) {
+      phase.goTo(14);
+    }
+
+    // display the selected duration on the neopixels
+    lightStrip.show(12, duration.get());
+
+  }
+
+
+
+
+  /**
+   * Phase 13-- Diffusal running
+   * 
+   *   @todo
+   */
+  else if (phase.getCurrentPhase() == 14) {
+    
+    // if both buttons are held at once, advance to Diffusal paused phase
+    if (team0Button.getState() == 2 && team1Button.getState() == 2) {
+      phase.goTo(13);
+    }
+
+    // display the selected duration on the neopixels
+    lightStrip.show(13, 0);
+
+  }
+
+
+  /**
+   * Phase 14-- Diffusal paused
+   * 
+   *   User presses and holds both buttons to switch to run phase
+   */
+  else if (phase.getCurrentPhase() == 14) {
+    
+
+    // if both buttons are held at once, advance to Diffusal paused phase
+    if (team0Button.getState() == 2 && team1Button.getState() == 2) {
+      phase.goTo(13);
+    }
+
+    // display the selected duration on the neopixels
+    lightStrip.show(14, 0);
+
+  }
+
 
 
 }

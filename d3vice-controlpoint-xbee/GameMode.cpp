@@ -8,9 +8,9 @@
 
 
 
-GameMode::GameMode(uint8_t initialGameMode)
+GameMode::GameMode(uint8_t initialGameMode = 0)
 {
-  _gameMode = initialGameMode || 0;
+  _gameMode = initialGameMode;
 }
 
 void GameMode::set(uint8_t gameMode)

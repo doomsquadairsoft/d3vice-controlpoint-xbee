@@ -5,7 +5,6 @@
 #endif
 #include "LightStrip.h"
 #include <Adafruit_NeoPixel.h>
-#include "Score.h"
 #include "Phase.h"
 
 
@@ -182,6 +181,69 @@ void LightStrip::show(uint8_t phaseNumber, uint8_t parameter)
       _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(33, 89, 138));
       _neoPixelStrip.show();
     }
+  }
+
+
+  /**
+   * Phase 12-- Diffusal select duration
+   * 
+   * LightStrip should show the selected duration. One neopixel per minute
+   *
+   */
+  else if (phaseNumber == 12) {
+
+    // clear all neopixels
+    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 0, 0));
+    }
+    
+    // Display the selected duration. One pixel per one minute.
+    if (parameter <= _neoPixelStrip.numPixels()) {
+      _neoPixelStrip.setPixelColor(parameter, _neoPixelStrip.Color(144, 0, 132));
+    }
+    _neoPixelStrip.show();
+
+    return;
+  }
+
+
+
+
+  /**
+   * Phase 13-- Diffusal running
+   * 
+   * LightStrip should show a color
+   *
+   */
+  else if (phaseNumber == 13) {
+
+    // clear all neopixels
+    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(0, 140, 142));
+    }
+    _neoPixelStrip.show();
+
+    return;
+  }
+
+
+
+  /**
+   * Phase 14-- Diffusal paused
+   * 
+   * LightStrip should show a pulsating color
+   *
+   */
+  else if (phaseNumber == 14) {
+
+    // set all neopixels
+    // @todo make this pulsating
+    for(uint16_t i=0; i<_neoPixelStrip.numPixels(); i++) {
+      _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(157, 141, 152));
+    }
+    _neoPixelStrip.show();
+
+    return;
   }
 
 

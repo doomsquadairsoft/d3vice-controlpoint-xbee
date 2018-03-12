@@ -7,7 +7,6 @@
     #include "WProgram.h"
 #endif
 #include <Adafruit_NeoPixel.h>
-#include "Score.h"
 #include "Phase.h"
 
 

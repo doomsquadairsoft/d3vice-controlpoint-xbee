@@ -34,6 +34,8 @@ Phase::Phase(uint8_t phase) : _phase(phase)
 {
   _isSwitchedLastTick = 1; // starts as 1 so other classes know phase 0 just started
   _isPhaseAdvanceQueued = 0;
+  _isPhaseGoToQueued = 0;
+  _queuedGoToPhase = 0;
 }
 
 /**
@@ -45,6 +47,15 @@ void Phase::advance()
 {  
   _isPhaseAdvanceQueued = 1;
   return;
+}
+
+
+void Phase::goTo(uint8_t phase)
+{
+  if (phase < 2^8) {
+    _isPhaseGoToQueued = 1;
+    _queuedGoToPhase = phase;
+  }
 }
 
 
@@ -67,6 +78,11 @@ void Phase::update()
   if (_isPhaseAdvanceQueued == 1) {
     _isPhaseAdvanceQueued = 0;
     _advance();
+  }
+
+  if (_isPhaseGoToQueued == 1) {
+    _isPhaseGoToQueued = 0;
+    _goTo(_queuedGoToPhase);
   }
 
 }
@@ -96,5 +112,21 @@ void Phase::_advance()
   }
   
   return;
+}
+
+/**
+ * Phase::_goTo
+ * 
+ * go directly to the specified phase.
+ * called internally by Phase::goTo
+ * 
+ * do not call this directly.
+ */
+void Phase::_goTo(uint8_t phase)
+{
+  _isSwitchedLastTick = 1;
+  if (phase < 2^8) {
+    _phase = phase;
+  }
 }
 

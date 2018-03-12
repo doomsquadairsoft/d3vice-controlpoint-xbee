@@ -4,7 +4,6 @@
     #include "WProgram.h"
 #endif
 #include "LED.h"
-#include "Score.h"
 #include "Phase.h"
 
 LED::LED(bool teamNumber, uint8_t ledPin, unsigned long duration)

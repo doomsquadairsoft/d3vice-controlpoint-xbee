@@ -6,7 +6,6 @@
 #else
     #include "WProgram.h"
 #endif
-#include "Score.h"
 #include "Phase.h"
 
 class LED
