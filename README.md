@@ -18,10 +18,6 @@ If you have used and enjoy this code base, I'd love to hear from you!
   * Add your user account to tty and dialout groups (May or may not be required for your OS)
     * `sudo usermod -aG tty,dialout <YOUR_USERNAME_HERE>`
 
-## Development paradigm
-
-Code follows [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) design paradigm as much as possible. Button.cpp and Radio.cpp interface with the user, which calls [C]ontroller.cpp functions which modify the game [M]odel in Phase.cpp and Score.cpp. [V]iew classes are Sound.cpp, LightStrip.cpp, and LED.cpp. User input should never directly modify views. User input should never directly modify the Model.
-
 ## Enclosure Ideas
 
   * [MTM Survivor Dry Box with O-Ring Seal, Large](https://www.amazon.com/MTM-Survivor-Ring-Orange-Large/dp/B002KENWZY/ref=pd_rhf_ee_s_cp_0_3?_encoding=UTF8&pd_rd_i=B002KENWZY&pd_rd_r=DREY47809SR4JA75TENW&pd_rd_w=tL9qp&pd_rd_wg=YghNF&psc=1&refRID=DREY47809SR4JA75TENW)
@@ -60,7 +56,7 @@ The following people have helped this project in some way, and deserve a mention
 
 ## Todo list
 
-  * [ ] Fix phase 3 issue where ttw is ???
+  * [x] Fix phase 3 issue where ttw is ???
   * [ ] Implement XBee
   * [ ] Implement debugging via XBee wireless link
   * [x] Fix button debounce issue
