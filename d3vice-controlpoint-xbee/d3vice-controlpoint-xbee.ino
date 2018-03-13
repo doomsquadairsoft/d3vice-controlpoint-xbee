@@ -46,8 +46,7 @@
 #include "Phase.h"
 #include "Radio.h"
 //#include "Device.h"
-#include "GameMode.h"
-#include "Duration.h"
+#include "Config.h"
 
 
 // pin definitions
@@ -90,9 +89,9 @@ LED button0LED = LED(0, button0LEDPin, 50);
 LED button1LED = LED(1, button1LEDPin, 50);
 LightStrip lightStrip = LightStrip(strip);
 Sound sound = Sound(buzzerPin);
-GameMode gameMode = GameMode(0);
-Duration duration = Duration(15);
-
+Config gameMode = Config(0);  // Game mode configuration.                   Ex: (1) == Diffusal
+Config duration = Config(15); // Game max duration configuration.           Ex: (15) minutes
+Config ttw = Config(15);      // Time to win configuration for Domination.  Ex: (15) minutes 
 
 
 
@@ -304,7 +303,31 @@ void loop()
    *   Holding both buttons saves the selection and moves to the next phase (game running)
    */
   else if (phase.getCurrentPhase() == 3) {
+    
+    
     lightStrip.show(3, 0);
+    
+    
+    // if the team 0 button was just released (short press)
+    // increment the required time to win
+    if (team0Button.wasPressReleasedLastTick()) {
+      ttw.increment();
+    }
+
+    // if the team 1 button was just released (short press)
+    // decrement the required time to win
+    else if (team1Button.wasPressReleasedLastTick()) {
+      ttw.decrement();
+    }
+
+    // if both buttons are held at once, advance to Domination paused phase
+    else if (team0Button.getState() == 2 && team1Button.getState() == 2) {
+      phase.goTo(5);
+    }
+
+    // display the selected duration on the neopixels
+    lightStrip.show(3, ttw.get());
+
   }
 
 
@@ -371,6 +394,36 @@ void loop()
   }
 
 
+
+  /**
+   * Phase 13-- Diffusal game running
+   * 
+   *   User presses button 0 to set user
+   *   User presses button 1 to decrement timer
+   */
+  else if (phase.getCurrentPhase() == 12) {
+    
+    // if the team 0 button was just released (short press)
+    // increment the selected game mode
+    if (team0Button.wasPressReleasedLastTick()) {
+      duration.increment();
+    }
+
+    // if the team 1 button was just released (short press)
+    // decrement the selected game mode
+    else if (team1Button.wasPressReleasedLastTick()) {
+      duration.decrement();
+    }
+
+    // if both buttons are held at once, advance to Diffusal paused phase
+    else if (team0Button.getState() == 2 && team1Button.getState() == 2) {
+      phase.goTo(14);
+    }
+
+    // display the selected duration on the neopixels
+    lightStrip.show(12, duration.get());
+
+  }
 
 
   /**

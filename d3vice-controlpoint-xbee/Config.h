@@ -1,5 +1,5 @@
-#ifndef GameMode_h
-#define GameMode_h
+#ifndef Config_h
+#define Config_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
     #include "Arduino.h"
@@ -10,16 +10,16 @@
 
 
 
-class GameMode
+class Config
 {
   public:
-    GameMode(uint8_t initialGameMode);
-    void set(uint8_t gameMode);
+    Config(uint8_t initialConfig);
+    void set(uint8_t config);
     uint8_t get();
     void increment();
     void decrement();
   private:
-    uint8_t _gameMode;
+    uint8_t _config;
 };
 
 
