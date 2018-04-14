@@ -102,7 +102,7 @@ void LightStrip::show(uint8_t phaseNumber, uint8_t parameter)
     }
 
     // light one neopixel per each minute in Score::_ttw
-    for (uint16_t i=0; i<(6); i++) {
+    for (uint16_t i=0; i<parameter; i++) {
       _neoPixelStrip.setPixelColor(i, _neoPixelStrip.Color(72, 19, 0));
     }
     _neoPixelStrip.show();

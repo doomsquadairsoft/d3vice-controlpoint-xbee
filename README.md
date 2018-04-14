@@ -26,6 +26,25 @@ If you have used and enjoy this code base, I'd love to hear from you!
 
 ## XBee
 
+### Setup
+
+To connect to the XBee, a [SparkFun FTDI Basic Breakout 3.3v](https://www.sparkfun.com/products/9873) is used along with an [Adafruit XBee Adapter kit v1.1](https://www.adafruit.com/product/126). As my Adafruit XBee adapter kit v1.1 is discontinued, the replacment seems to be Adafruit's [USB XBee Adapter](https://www.adafruit.com/product/247) which I haven't tested but should do the trick. A separate FTDI chip isn't necessary with that new model.
+
+XCTU is the program for configuring XBee modules. It is cross-platform.
+
+57600 baudrate
+
+#### XCTU Troubleshooting
+
+Make sure if using it on linux, you add yourself to the `dialout` group. Example: `sudo usermod -a -G dialout chris`
+
+Make sure Arduino IDE is closed when working with XCTU. Radio discovery can be finnicky, but it works when it works.
+
+XCTU's download links on Digi's website are usually broken. Find the filename from the [download page](https://www.digi.com/products/xbee-rf-solutions/xctu-software/xctu#productsupport-drivers), then manually browse their [ftp server](ftp://ftp1.digi.com/support/utilities/) for the correct version of XCTU.
+
+If you can't get XCTU to communicate with your XBee, the rule of thumb is keep trying. It doesn't always work the first or second time. Try the different connection methods as well, from discovery to manually entering XBee serial/USB configuration.
+
+
 ### Power
 
 The XBee is very sensitive when it comes to power. It needs as close to 3.3V as possible. When using USB, the Fio gives it a clean 3.285V. 3.296 was acheived using the buck converter regulator and that seemed to do the trick. If you are attempting to remotely program the XBee using X-CTU, and the read process seems slow, it may be that the XBee is crashing when it tries to pull power. Check voltages and try again.
@@ -38,13 +57,13 @@ The XBee is very sensitive when it comes to power. It needs as close to 3.3V as 
 
 #### switzerland-robust
 
-SH 13A200
+SH 0013A200
 SL 40B51A26
 
 #### borders-portals
 
-SH 13A200
-SL 408774EC
+SH 0013A200
+SL 40B774EC
 
 ## Special Thanks
 

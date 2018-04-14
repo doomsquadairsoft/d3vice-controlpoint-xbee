@@ -14,10 +14,19 @@
 class Radio
 {
   public:
-    Radio(XBee& xbee);
+    Radio(XBee& xbee, XBeeAddress64 gatewayAddress);
     void update();
+    void greet();
+    void _greet();
+    bool isCurrentGame();
   private:
-    XBee& _XBee;
+    XBee& _xbee;
+    uint8_t _payload[3] = {67, 67, 67};
+    uint8_t _payloadLength;
+    unsigned long _lastGreetTime;
+    XBeeAddress64 _gatewayAddress;
+    ZBTxRequest _zbRequest;
+    ZBTxStatusResponse _zbResponse;
 };
 
 #endif
