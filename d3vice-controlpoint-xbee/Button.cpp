@@ -4,8 +4,6 @@
     #include "WProgram.h"
 #endif
 #include "Button.h"
-#include "Score.h"
-#include "Phase.h"
 
 
 Button::Button(uint8_t teamNumber, uint8_t buttonPin)
@@ -22,7 +20,7 @@ Button::Button(uint8_t teamNumber, uint8_t buttonPin)
 /**
  * Button.update()
  * 
- * If the button is pressed, update the controlling team in Score
+ * Determine the button's state
  */
 void Button::update() {
 
@@ -221,4 +219,5 @@ bool Button::wasHoldReleasedLastTick()
     return 0;
   }
 }
+
 

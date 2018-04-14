@@ -32,21 +32,17 @@
  */
 
 
-// Contributed libraries
+/** 
+ * Contributed libraries
+ */
 #include <Adafruit_NeoPixel.h>
-//#include <Printers.h>
 #include <XBee.h>
 
-// DooM Squad libraries
+/**
+ * DooM Squad Libraries
+ */
 #include "Button.h"
-#include "LED.h"
-#include "LightStrip.h"
-#include "Sound.h"
-#include "Domination.h"
-#include "Phase.h"
-#include "Radio.h"
-//#include "Device.h"
-#include "Config.h"
+
 
 
 // pin definitions
@@ -67,9 +63,16 @@
 uint32_t xbeeGatewaySH = 0x0013A200;
 uint32_t xbeeGatewaySL = 0x40B774EC;
 
+/**
+ * xbee status led config (temporary @todo deleteme)
+ */
+int statusLed = button0LEDPin;
+int errorLed = button1LEDPin;
 
-
-
+/**
+ * Phase
+ */
+int phase = 0;
 
 
 /**
@@ -82,7 +85,8 @@ unsigned long lastGreetTime = 0;
 XBeeAddress64 gatewayAddress = XBeeAddress64(xbeeGatewaySH, xbeeGatewaySL);
 ZBTxRequest zbRequest = ZBTxRequest(gatewayAddress, payload, payloadLength); // address, payload, size
 ZBTxStatusResponse zbResponse = ZBTxStatusResponse();
-
+Button team0Button = Button(0, button0Pin);
+Button team1Button = Button(1, button1Pin);
 
 
 // Parameter 1 = number of pixels in strip
@@ -95,41 +99,13 @@ ZBTxStatusResponse zbResponse = ZBTxStatusResponse();
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, neopixelPin, NEO_GRB + NEO_KHZ800);
 
-Score score = Score();
-Phase phase = Phase(0);
-Domination game = Domination(score);
-
-// Device::Device(numberOfButtons, buzzerPin, strip, xbee)
-//Device device = Device(1, buzzerPin, strip, xbee);
-
-Button team0Button = Button(0, button0Pin);
-Button team1Button = Button(1, button1Pin);
-LED button0LED = LED(0, button0LEDPin, 50);
-LED button1LED = LED(1, button1LEDPin, 50);
-LightStrip lightStrip = LightStrip(strip);
-Sound sound = Sound(buzzerPin);
-Config gameMode = Config(0);  // Game mode configuration.                   Ex: (1) == Diffusal
-Config duration = Config(15); // Game max duration configuration.           Ex: (15) minutes
-Config ttw = Config(15);      // Time to win configuration for Domination.  Ex: (15) minutes
 
 
-
-
-// configuration of the team's color (for neopixels)
+/** 
+ * configuration of the team's color (for neopixels)
+ */
 uint32_t team0color = strip.Color(255, 0, 0);
-uint32_t team1color = strip.Color(0, 255, 0);
-
-
-// counter for the time the teams have had control of the point
-long team0controlTime = 0;
-long team1controlTime = 0;
-
-
-// variable for showing whether or not game is deriving initial state from XBee network
-bool isNetworkGame;
-
-
-
+uint32_t team1color = strip.Color(0, 0, 255);
 
 
 
@@ -162,24 +138,6 @@ void setup() {
   // lights and sounds are functioning properly.
   testSequence();
 
-  // @TODO
-  //   check the XBee network to determine if there is a running game already.
-  isNetworkGame = 0;
-
-  // if there is no game server on the XBee network, switch to autistic mode.
-  // (standalone mode, no wireless connection active)
-  if (isNetworkGame) {
-    // @TODO
-    //   Sync with the networked game state, then begin loop()
-  }
-  else {
-    // @TODO
-    //   enter autistic mode (standalone, no wireless connections active)
-
-    // begin operation, starting with programming phase.
-    return;
-  }
-
 
 }
 
@@ -200,302 +158,94 @@ void setup() {
  */
 void loop()
 {
-
   // poll pushbuttons for activity
   team0Button.update();
   team1Button.update();
-  phase.update();
-  sound.update();
 
 
-
-
-
-
-   /**
-    *
-    *  do things if the phase just changed
-    */
-   if (phase.getWasSwitchedLastTick()) {
-      team0Button.lock();
-      team1Button.lock();
-      sound.asyncBeep(150);
-   }
-
-
-
-  /**
-   * do stuff based on the current phase
-   *
-   */
-
-  /**
-   * Phase 0-- Test phase
-   *
-   * D3VICE does a self-check
-   * User can watch d3vice and see/hear if any of the display/sound elements aren't working
-   */
-  if (phase.getCurrentPhase() == 0) {
-    lightStrip.show(0, 0);
-
-
-    // handle both buttons pressed simultaneously
-    if (team0Button.getState() == 2 && team1Button.getState() == 2) {
-      phase.advance();
-    }
+  
+  if (phase == 0) {
+    runPhase0();
   }
 
-
-
-
-
-
-
-  /**
-   * Phase 1-- HELLO Phase
-   *
-   *   XBee Radio contacts the network and synconizes with remote game state (if any)
-   */
-  if (phase.getCurrentPhase() == 1) {
-
-   /**
-    * Greet the world using RF
-    */
-   radioGreet();
-
-   //if (radio.isCurrentGame()) {
-   //   // @todo
-   //   //   * retrieve current game state
-   //   //   * switch to appropriate phase
-   //}
-   //else {
-   //   //phase.advance();
-   //}
-
-   lightStrip.show(1, 0);
-
+  else if (phase == 1) {
+    runPhase1();
   }
 
-       
+  else if (phase == 2) {
+    runPhase2();
+  }
+
+  else if (phase == 3) {
+    runPhase3();
+  }
+
+  else if (phase == 4) {
+    runPhase4();
+  }
+
+}
 
 
 
-  /**
-   * Phase 2-- Game mode select
-   *
-   * User presses buttons to cycle between the available game modes
-   * User holds both buttons simultaneously to advance to next phase
-   *
-   */
-  else if (phase.getCurrentPhase() == 2) {
+void flashLed(int pin, int times, int wait) {
 
-    // if the team 0 button was just released (short press)
-    // increment the selected game mode
-    if (team0Button.wasPressReleasedLastTick()) {
-      gameMode.increment();
+  for (int i = 0; i < times; i++) {
+    digitalWrite(pin, HIGH);
+    delay(wait);
+    digitalWrite(pin, LOW);
+
+    if (i + 1 < times) {
+      delay(wait);
     }
-
-    // if the team 1 button was just released (short press)
-    // decrement the selected game mode
-    else if (team1Button.wasPressReleasedLastTick()) {
-      gameMode.decrement();
-    }
-
-    // if both buttons are held at once, advance to appropriate phase
-    // based on the selected game mode.
-    else if (team0Button.getState() == 2 && team1Button.getState() == 2) {
+  }
+}
 
 
-      // if Domination (0) was selected, go to phase 3
-      if (gameMode.get() == 0) {
-        phase.goTo(3);
-      }
 
-      // if Diffusal (1) was selected, go to phase 12
-      else if (gameMode.get() == 1) {
-        phase.goTo(12);
+void runPhase0() { 
+  // break down 10-bit reading into two bytes and place in payload
+  payload[0] = 'D';
+  payload[1] = 'C';
+  payload[2] = 'X';
+
+  xbee.send(zbRequest);
+
+  // flash TX indicator
+  flashLed(statusLed, 1, 100);
+
+  // after sending a tx request, we expect a status response
+  // wait up to half second for the status response
+  if (xbee.readPacket(500)) {
+    // got a response!
+
+    // should be a znet tx status              
+    if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
+      xbee.getResponse().getZBTxStatusResponse(zbResponse);
+
+      // get the delivery status, the fifth byte
+      if (zbResponse.getDeliveryStatus() == SUCCESS) {
+        // success.  time to celebrate
+        flashLed(statusLed, 5, 50);
+      } else {
+        // the remote XBee did not receive our packet. is it powered on?
+        flashLed(errorLed, 3, 500);
       }
     }
-
-    // display the selected game mode on the neopixels
-    lightStrip.show(2, gameMode.get());
+  } else if (xbee.getResponse().isError()) {
+    //nss.print("Error reading packet.  Error code: ");  
+    //nss.println(xbee.getResponse().getErrorCode());
+  } else {
+    // local XBee did not provide a timely TX Status Response -- should not happen
+    flashLed(errorLed, 2, 50);
   }
 
+  delay(1000);
+  
+}
 
-
-
-
-
-
-  /**
-   * Phase 3-- Programming > Domination > duration.
-   *   The phase when the user chooses the total cumulative time a team needs to control the point to win.
-   *   Blue button increments the time by 1 minute (up to a maximum of 595 hours)
-   *   Red button decrements the time by 1 minute (down to a minimum of 1 second)
-   *   Holding both buttons saves the selection and moves to the next phase (game running)
-   */
-  else if (phase.getCurrentPhase() == 3) {
-
-
-    lightStrip.show(3, 0);
-
-
-    // if the team 0 button was just released (short press)
-    // increment the required time to win
-    if (team0Button.wasPressReleasedLastTick()) {
-      ttw.increment();
-    }
-
-    // if the team 1 button was just released (short press)
-    // decrement the required time to win
-    else if (team1Button.wasPressReleasedLastTick()) {
-      ttw.decrement();
-    }
-
-    // if both buttons are held at once, advance to Domination paused phase
-    else if (team0Button.getState() == 2 && team1Button.getState() == 2) {
-      phase.goTo(5);
-    }
-
-    // display the selected duration on the neopixels
-    lightStrip.show(3, ttw.get());
-
-  }
-
-
-
-
-
-
-  /**
-   * Phase 4-- Dominatino game is running
-   */
-  else if (phase.getCurrentPhase() == 4) {
-    lightStrip.show(4, 0);
-  }
-
-
-
-  /**
-   * Phase 5-- Domination game is paused
-   */
-  else if (phase.getCurrentPhase() == 5) {
-    lightStrip.show(5, 0);
-  }
-
-
-
-
-  /**
-   * Phase 6-- Domination game is won
-   */
-  else if (phase.getCurrentPhase() == 6) {
-    lightStrip.show(6, 0);
-  }
-
-
-
-  /**
-   * Phase 12-- Diffusal select duration
-   *
-   *   User presses button 0 to increment timer
-   *   User presses button 1 to decrement timer
-   */
-  else if (phase.getCurrentPhase() == 12) {
-
-    // if the team 0 button was just released (short press)
-    // increment the selected game mode
-    if (team0Button.wasPressReleasedLastTick()) {
-      duration.increment();
-    }
-
-    // if the team 1 button was just released (short press)
-    // decrement the selected game mode
-    else if (team1Button.wasPressReleasedLastTick()) {
-      duration.decrement();
-    }
-
-    // if both buttons are held at once, advance to Diffusal paused phase
-    else if (team0Button.getState() == 2 && team1Button.getState() == 2) {
-      phase.goTo(14);
-    }
-
-    // display the selected duration on the neopixels
-    lightStrip.show(12, duration.get());
-
-  }
-
-
-
-  /**
-   * Phase 13-- Diffusal game running
-   *
-   *   User presses button 0 to set user
-   *   User presses button 1 to decrement timer
-   */
-  else if (phase.getCurrentPhase() == 12) {
-
-    // if the team 0 button was just released (short press)
-    // increment the selected game mode
-    if (team0Button.wasPressReleasedLastTick()) {
-      duration.increment();
-    }
-
-    // if the team 1 button was just released (short press)
-    // decrement the selected game mode
-    else if (team1Button.wasPressReleasedLastTick()) {
-      duration.decrement();
-    }
-
-    // if both buttons are held at once, advance to Diffusal paused phase
-    else if (team0Button.getState() == 2 && team1Button.getState() == 2) {
-      phase.goTo(14);
-    }
-
-    // display the selected duration on the neopixels
-    lightStrip.show(12, duration.get());
-
-  }
-
-
-  /**
-   * Phase 13-- Diffusal running
-   *
-   *   @todo
-   */
-  else if (phase.getCurrentPhase() == 14) {
-
-    // if both buttons are held at once, advance to Diffusal paused phase
-    if (team0Button.getState() == 2 && team1Button.getState() == 2) {
-      phase.goTo(13);
-    }
-
-    // display the selected duration on the neopixels
-    lightStrip.show(13, 0);
-
-  }
-
-
-  /**
-   * Phase 14-- Diffusal paused
-   *
-   *   User presses and holds both buttons to switch to run phase
-   */
-  else if (phase.getCurrentPhase() == 14) {
-
-
-    // if both buttons are held at once, advance to Diffusal paused phase
-    if (team0Button.getState() == 2 && team1Button.getState() == 2) {
-      phase.goTo(13);
-    }
-
-    // display the selected duration on the neopixels
-    lightStrip.show(14, 0);
-
-  }
-
-
-
+void runPhase1() {
+  flashLed(statusLed, 50, 50);
 }
 
 
@@ -564,85 +314,5 @@ void pixelsOff() {
     strip.setPixelColor(i, strip.Color(0, 0, 0));
     strip.show();
   }
-}
-
-void flashLed(int pin, int times, int wait) {
-
-  for (int i = 0; i < times; i++) {
-    digitalWrite(pin, HIGH);
-    delay(wait);
-    digitalWrite(pin, LOW);
-
-    if (i + 1 < times) {
-      delay(wait);
-    }
-  }
-}
-
-
-
-void radioGreet() {
-  // greet immediately if this is the first time a greet has occured.
-  // this will only happen once per run.
-  if (lastGreetTime == 0) {
-    radioSendGreet();
-    lastGreetTime = millis();
-  }
-  
-  // greet once every 5 seconds
-  else if (millis() - lastGreetTime >= 10000) {
-    radioSendGreet();
-    
-    // log this greet occurance
-    lastGreetTime = millis();
-  }
-}
-
-void radioSendGreet() {
-  // set address to the broadcast address
-  gatewayAddress.setMsb(0x00000000);
-  gatewayAddress.setMsb(0x0000FFFF);
-  
-  // configure the payload
-  payload[0] = 'D';
-  payload[1] = 'C';
-  payload[2] = 'X';
-
-
-  
-  // send a warm greeting of radiation
-  xbee.send(zbRequest);
-
-
-  // flash TX indicator
-  flashLed(button0LEDPin, 1, 100);
-  
-  // after sending a tx request, we expect a status response
-  // wait up to half second for the status response
-  if (xbee.readPacket(500)) {
-    // got a response!
-  
-    // should be a znet tx status              
-    if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
-      xbee.getResponse().getZBTxStatusResponse(zbResponse);
-  
-      // get the delivery status, the fifth byte
-      if (zbResponse.getDeliveryStatus() == SUCCESS) {
-        // success.  time to celebrate
-        flashLed(button0LEDPin, 5, 50);
-      } else {
-        // the remote XBee did not receive our packet. is it powered on?
-        flashLed(button1LEDPin, 3, 500);
-      }
-    }
-  } else if (xbee.getResponse().isError()) {
-    //nss.print("Error reading packet.  Error code: ");  
-    //nss.println(xbee.getResponse().getErrorCode());
-    flashLed(button1LEDPin, 4, 50);
-  } else {
-    // local XBee did not provide a timely TX Status Response -- should not happen
-    flashLed(button1LEDPin, 2, 50);
-  }
-
 }
 
