@@ -34,7 +34,7 @@ XCTU is the program for configuring XBee modules. It is cross-platform.
 
 57600 baudrate
 
-#### XCTU Troubleshooting
+#### XCTU Troubleshootinghttps://www.youtube.com/watch?v=ChCHfJoo9CQ
 
 Make sure if using it on linux, you add yourself to the `dialout` group. Example: `sudo usermod -a -G dialout chris`
 
@@ -82,3 +82,23 @@ The following people have helped this project in some way, and deserve a mention
   * [x] Fix endless beep on phase >=1
   * [x] Add button hold logic
   * [x] Implement ButtonManager
+
+## Parts list
+
+  * (2) 220 Ohm resistor (JP3 button LEDs)
+  * (2) 10K Ohm resistor (JP4 button switches)
+  * (1) 470 Ohm resistor (R1 Level shifter)
+  * (1) 100 Ohm resistor (R2 buzzer)
+  * (1) [Arduino Fio](https://amzn.to/2vkoAoj)
+  * (1) 900MHz series XBee S2B
+  * (1) [Digi JF1R6-CR3-4I U.FL fem to RPSMA fem cable](https://www.mouser.com/productdetail/digi-international/jf1r6-cr3-4i?qs=YPg7lQ8MWSd%252bJ21AYb5tjA%3D%3D)
+  * (1) [2.4GHz dipole antenna](https://www.mouser.com/ProductDetail/Laird-LS-Research/001-0001?qs=%2fha2pyFaduic7%252bgB%2fLd2y%2fydYaVrig4l0IiQcO85%252biN2Plogftrjhg%3d%3d) (@TODO this doesn't seem right)
+  * (1) 5V Buzzer
+  * (1) 1000 uF electrolytic capacitor
+  * (1) [TI 74AHCT125](http://adafru.it/1787) (NeoPixel 3V to 5V level shifter)
+  * (1) [Red Arcade pushbutton](https://amzn.to/2qzc0vI)
+  * (1) [Blue Arcade pushbutton](https://amzn.to/2vszEjp)
+  * (2) [18650 Cell holder](https://amzn.to/2JN0Lsh)
+  * (2) 18650 Li-Ion 3.7V battery
+  * (1) [Qunqi MP1584EN DC-DC Buck Converter](https://amzn.to/2EPh9oB)
+  * (1) [MTM Survivor Dry Box with O-Ring](https://amzn.to/2JQuaSx)
