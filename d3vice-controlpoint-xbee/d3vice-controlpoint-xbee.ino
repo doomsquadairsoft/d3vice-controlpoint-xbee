@@ -53,6 +53,7 @@
 #define onboardLEDPin 13
 #define neopixelPin 12
 #define buzzerPin 9
+#define sleepPin 6
 
 
 /**
@@ -69,6 +70,7 @@ uint32_t xbeeGatewaySL = 0x40B774EC;
 int statusLed = button0LEDPin;
 int errorLed = button1LEDPin;
 
+
 /**
  * Phase
  */
@@ -80,6 +82,14 @@ int phase = 0;
  */
 unsigned long lastBroadcastHoldEvent = 0;
 unsigned long lastXEvent = 0;
+
+
+/**
+ * Battlefield State
+ */
+uint8_t controllingTeam = 0;
+uint8_t redProgress = 0;
+uint8_t bluProgress = 0;
 
 
 /**
@@ -112,8 +122,9 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, neopixelPin, NEO_GRB + NEO_KHZ80
 /** 
  * configuration of the team's color (for neopixels)
  */
-uint32_t team0color = strip.Color(255, 0, 0);
-uint32_t team1color = strip.Color(0, 0, 255);
+uint32_t redColor = strip.Color(255, 0, 0);
+uint32_t bluColor = strip.Color(0, 0, 255);
+uint32_t greyColor = strip.Color(50, 50, 50);
 
 
 
@@ -134,6 +145,8 @@ void setup() {
   pinMode(neopixelPin, OUTPUT);
   pinMode(button0Pin, INPUT);
   pinMode(button1Pin, INPUT);
+  pinMode(sleepPin, OUTPUT);
+  digitalWrite(sleepPin, LOW);
 
   Serial.begin(57600);
   xbee.setSerial(Serial);
@@ -187,6 +200,10 @@ void loop()
 
   else if (phase == 4) {
     runPhase4();
+  }
+
+  else if (phase == 7) {
+    runPhase7();
   }
 
   else if (phase == 19) {
@@ -329,6 +346,7 @@ void runPhase3() {
 
 void runPhase4() {
 
+
   /**
    * If team 0 button is held, broadast
    */
@@ -339,6 +357,49 @@ void runPhase4() {
   else if (team1Button.getState() == 2) {
     broadcastHoldEvent(1);
   }
+
+  /**
+   * Listen for state updates
+   */
+  listenForState();
+
+  /**
+   * update LEDs according to state
+   */
+  displayState();
+  
+}
+
+
+/**
+ * button test phase
+ * tests the various button states
+ * 
+ * 0 released
+ * 1 pressed
+ * 2 held
+ * 3 locked
+ *
+ */
+void runPhase7() {
+
+  if (team0Button.getState() == 1 || 
+      team1Button.getState() == 1) {
+    flashLed(buzzerPin, 1, 100);
+  }
+
+  else if (team0Button.getState() == 2 ||
+           team1Button.getState() == 2) {
+    flashLed(buzzerPin, 2, 100);
+  }
+
+  else if (team0Button.getState() == 3 ||
+           team1Button.getState() == 3) {
+    flashLed(buzzerPin, 3, 100);
+  }
+
+  delay(300);
+
 }
 
 /**
@@ -352,47 +413,7 @@ void runPhase19() {
 
     // rate limiting
     if (millis() - lastXEvent > 1000) {
-    
-    /**
-     * Send a HELLO
-     */
-    payload[0] = 'D';
-    payload[1] = 'C';
-    payload[2] = 'X';
-    payload[3] = 'H';
-    payload[4] = 'I';
-  
-  
-    xbee.send(zbRequest);
-  
-    // flash TX indicator
-    flashLed(statusLed, 1, 100);
-  
-    // after sending a tx request, we expect a status response
-    // wait up to half second for the status response
-    if (xbee.readPacket(500)) {
-      // got a response!
-  
-      // should be a znet tx status              
-      if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
-        xbee.getResponse().getZBTxStatusResponse(zbResponse);
-  
-        // get the delivery status, the fifth byte
-        if (zbResponse.getDeliveryStatus() == SUCCESS) {
-          // success.  time to celebrate
-          flashLed(statusLed, 5, 50);
-        } else {
-          // the remote XBee did not receive our packet. is it powered on?
-          flashLed(errorLed, 3, 500);
-        }
-      }
-    } else if (xbee.getResponse().isError()) {
-      //nss.print("Error reading packet.  Error code: ");  
-      //nss.println(xbee.getResponse().getErrorCode());
-    } else {
-      // local XBee did not provide a timely TX Status Response -- should not happen
-      flashLed(errorLed, 2, 50);
-    }
+ 
 
   }
 }
@@ -412,47 +433,217 @@ void broadcastHoldEvent(int team) {
       payload[4] = 'H';
   
       if (team == 0) {
-        payload[6] = '0';
+        payload[5] = '0';
       }
       else if (team == 1) {
-        payload[6] = '1';
+        payload[5] = '1';
       }
       
     
       xbee.send(zbRequest);
     
-      // flash TX indicator
-      flashLed(statusLed, 1, 100);
-    
-      // after sending a tx request, we expect a status response
-      // wait up to half second for the status response
-      if (xbee.readPacket(500)) {
-        // got a response!
-    
-        // should be a znet tx status              
-        if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
-          xbee.getResponse().getZBTxStatusResponse(zbResponse);
-    
-          // get the delivery status, the fifth byte
-          if (zbResponse.getDeliveryStatus() == SUCCESS) {
-            // success.  time to celebrate
-            flashLed(statusLed, 5, 50);
-          } else {
-            // the remote XBee did not receive our packet. is it powered on?
-            flashLed(errorLed, 3, 500);
-          }
-        }
-      } else if (xbee.getResponse().isError()) {
-        //nss.print("Error reading packet.  Error code: ");  
-        //nss.println(xbee.getResponse().getErrorCode());
-      } else {
-        // local XBee did not provide a timely TX Status Response -- should not happen
-        flashLed(errorLed, 2, 50);
-      }
 
       lastBroadcastHoldEvent = millis();
     }
+
+
+    
+    // flash TX indicator
+    flashLed(statusLed, 1, 100);
+  
+    // after sending a tx request, we expect a status response
+    // wait up to half second for the status response
+    if (xbee.readPacket(1000)) {
+      // got a response!
+  
+      // should be a znet tx status              
+      if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
+        xbee.getResponse().getZBTxStatusResponse(zbResponse);
+  
+        // get the delivery status, the fifth byte
+        if (zbResponse.getDeliveryStatus() == SUCCESS) {
+          // success.  time to celebrate
+          flashLed(statusLed, 5, 100);
+        } else {
+          // the remote XBee did not receive our packet. is it powered on?
+          flashLed(errorLed, 3, 500);
+        }
+      }
+    } else if (xbee.getResponse().isError()) {
+      //nss.print("Error reading packet.  Error code: ");  
+      //nss.println(xbee.getResponse().getErrorCode());
+    } else {
+      // local XBee did not provide a timely TX Status Response -- should not happen
+      flashLed(buzzerPin, 2, 100);
+    }
 }
+
+//
+//void doParse(&rx) {
+//  for (uint8_t i=0; i<rx.getDataLength; i++) {
+//    rx.getData(i);
+//  }
+//}
+
+void listenForState() {  
+  /**
+   * Listen for state changes from controlpointer
+   */
+  xbee.readPacket();
+  if (xbee.getResponse().isAvailable()) {
+    // we got a response
+    if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE) {
+      xbee.getResponse().getZBRxResponse(rx);
+
+      if (rx.getOption() == ZB_PACKET_ACKNOWLEDGED) {
+        flashLed(statusLed, 10, 10);
+      } 
+      
+      else {
+        flashLed(errorLed, 2, 20);  
+      }
+
+
+
+      
+      /**
+       * interpret the state updates
+       * 
+       * https://github.com/doomsquadairsoft/d3vice-controlpoint-xbee/issues/2
+       */
+//      if (dcxParser.getDataType() == STATE_UPDATE) {
+//        controllingTeam = dcxParser.getData(CONTROLLING_TEAM);
+//        redProgress = dcxParser.getData(RED_PROGRESS);
+//        bluProgress = dcxParser.getData(BLU_PROGRESS);
+//      }
+
+
+      
+      if (
+        rx.getData(0) == 'D' &&
+        rx.getData(1) == 'C' &&
+        rx.getData(2) == 'X' &&
+        rx.getData(3) == 'S' &&
+        rx.getData(4) == 'T' 
+      )
+      {
+        // we're getting a state update (ST)
+        //flashLed(buzzerPin, 6, 150);
+        
+        if (rx.getData(5) == 'C' &&
+            rx.getData(6) == 'T'
+        )
+        {
+          // Controlling Team
+          //if (rx.getData(7) < 5) {
+          if (rx.getData(7) == '0') {
+            controllingTeam = 0;
+          }
+          else if (rx.getData(7) == '1') {
+            controllingTeam = 1;
+          }
+          else if (rx.getData(7) == '2') {
+            controllingTeam = 2;
+          }
+
+        }
+
+        if (rx.getData(8) == 'R' &&
+            rx.getData(9) == 'P'
+        )
+        {
+          //if (rx.getData(10) < 101) {
+            redProgress = rx.getData(10);
+          //}
+        }
+
+        if (rx.getData(11) == 'B' &&
+            rx.getData(12) == 'P'
+        )
+        {
+          //if (rx.getData(13) < 101) {
+            bluProgress = rx.getData(13);
+          //}
+        }
+      }
+    }
+  }
+}
+
+
+/**
+ * Display the state
+ */
+void displayState() {
+
+  /**
+   * If either redProgress or bluProgress has changed in the past 5 seconds,
+   * show the progress bar of the team capturing the point
+   */
+
+//  // @TODO add timer which detets if bluProgress or redProgress has changed recently
+//  if (!true) {
+//    // show color coded progress bar on pixels 0-8
+//    // show color coded progress bar on pixels 16-9
+//
+//    // if red controls, show blu progress bar
+//    if (controllingTeam == 1) {
+//      uint8_t mappedBluProgress = map(bluProgress, 0, 99, 0, 7);
+//      
+//      for(uint16_t i=0; i<mappedBluProgress; i++) {
+//        strip.setPixelColor(i, bluColor);
+//        strip.show();
+//      }
+//    }
+//
+//    // if blu controls, show red progress bar
+//    else if (controllingTeam == 2) {
+//      uint8_t mappedRedProgress = map(redProgress, 0, 99, 0, 7);
+//      
+//      for(uint16_t i=0; i<mappedRedProgress; i++) {
+//        strip.setPixelColor(i, redColor);
+//        strip.show();
+//      }
+//    }
+//  }
+
+  // bluProgress or redProgress has not changed within the last 5 seconds
+  //else {
+    
+    /**
+     * Show the color of the controlling team
+     */
+    if (controllingTeam == 0) {
+      for(uint16_t i=0; i<strip.numPixels(); i++) {
+        strip.setPixelColor(i, greyColor);
+        strip.show();
+      }
+    }
+  
+    else if (controllingTeam == 1) {
+      for(uint16_t i=0; i<strip.numPixels(); i++) {
+        strip.setPixelColor(i, redColor);
+        strip.show();
+      }
+    }
+  
+    else if (controllingTeam == 2) {
+      for(uint16_t i=0; i<strip.numPixels(); i++) {
+        strip.setPixelColor(i, bluColor);
+        strip.show();
+      }
+    }
+
+  //}
+
+
+
+  
+}
+
+
+
+
 
 
 void testSequence() {

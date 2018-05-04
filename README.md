@@ -34,6 +34,8 @@ XCTU is the program for configuring XBee modules. It is cross-platform.
 
 57600 baudrate
 
+Set the controlpoint as an ZB Router API NOT a ZB Endpoint API! Endpoint will work, but has complications with sleep mode.
+
 #### XCTU Troubleshootinghttps://www.youtube.com/watch?v=ChCHfJoo9CQ
 
 Make sure if using it on linux, you add yourself to the `dialout` group. Example: `sudo usermod -a -G dialout chris`
@@ -102,3 +104,5 @@ The following people have helped this project in some way, and deserve a mention
   * (2) 18650 Li-Ion 3.7V battery
   * (1) [Qunqi MP1584EN DC-DC Buck Converter](https://amzn.to/2EPh9oB)
   * (1) [MTM Survivor Dry Box with O-Ring](https://amzn.to/2JQuaSx)
+  * (1) [Medium keyswitch](https://www.sparkfun.com/products/retired/11473)
+  * (n) [24 AWG copper wire](https://amzn.to/2FrzB6S)
