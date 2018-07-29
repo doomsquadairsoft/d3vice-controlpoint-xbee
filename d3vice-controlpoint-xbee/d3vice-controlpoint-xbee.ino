@@ -59,8 +59,10 @@
 /**
  * XBee configuration
  *
- * Here is the serial number of the destination XBee gateway
+ * Here are the addresses the controlpoint may need
  */
+uint32_t xbeeBroadcastSH = 0x00000000;
+uint32_t xbeeBroadcastSL = 0x0000FFFF;
 uint32_t xbeeGatewaySH = 0x0013A200;
 uint32_t xbeeGatewaySL = 0x40B774EC;
 
@@ -179,7 +181,6 @@ void loop()
   // poll pushbuttons for activity
   team0Button.update();
   team1Button.update();
-  xbee.readPacket();
 
   
   if (phase == 0) {
@@ -247,49 +248,7 @@ void runPhase1() {
   /**
    * Send a HELLO
    */
-  payload[0] = 'D';
-  payload[1] = 'C';
-  payload[2] = 'X';
-  payload[3] = 'H';
-  payload[4] = 'I';
-
-  xbee.send(zbRequest);
-
-  // flash TX indicator
-  flashLed(statusLed, 1, 100);
-
-  // after sending a tx request, we expect a status response
-  // wait up to half second for the status response
-  if (xbee.readPacket(500)) {
-    // got a response!
-
-    // should be a znet tx status              
-    if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
-      xbee.getResponse().getZBTxStatusResponse(zbResponse);
-
-      // get the delivery status, the fifth byte
-      if (zbResponse.getDeliveryStatus() == SUCCESS) {
-        // success.  time to celebrate
-        flashLed(statusLed, 5, 50);
-      }
-      
-      else {
-        // the remote XBee did not receive our packet. is it powered on?
-        flashLed(errorLed, 3, 500);
-      }
-    }
-  } 
-  
-  else if (xbee.getResponse().isError()) {
-    //nss.print("Error reading packet.  Error code: ");  
-    //nss.println(xbee.getResponse().getErrorCode());
-  } 
-  
-  else {
-    // local XBee did not provide a timely TX Status Response -- should not happen
-    flashLed(errorLed, 2, 50);
-  }
-
+  radioGreet();
 
   
   /**
@@ -303,7 +262,7 @@ void runPhase1() {
 
       if (rx.getOption() == ZB_PACKET_ACKNOWLEDGED) {
         flashLed(statusLed, 10, 10);
-      } 
+      }
       
       else {
         flashLed(errorLed, 2, 20);  
@@ -315,7 +274,7 @@ void runPhase1() {
         rx.getData(1) == 'C' &&
         rx.getData(2) == 'X' &&
         rx.getData(3) == 'G' &&
-        rx.getData(4) == 'A' 
+        rx.getData(4) == 'A'
       )
       {
         // Our order is to start a game
@@ -331,14 +290,40 @@ void runPhase1() {
           phase = 19;
         }
       }
+
+
+
+      else if (
+        rx.getData(0) == 'D' &&
+        rx.getData(1) == 'C' &&
+        rx.getData(2) == 'X' &&
+        rx.getData(3) == 'S' &&
+        rx.getData(4) == 'B' &&
+        rx.getData(5) == 'Y'
+      )
+      {
+        // Our order is to standby
+        phase = 2;
+      }     
     }
   }
 }
 
 
+
+
+
+/**
+ * Phase 2
+ * 
+ * Standby phase
+ * 
+ * Admin marked this device as PENDING or INACTIVE. Just sit and wait for orders.
+ */
 void runPhase2() {
   flashLed(statusLed, 2, 5);
 }
+
 
 void runPhase3() {
   flashLed(statusLed, 3, 50);
@@ -711,4 +696,73 @@ void pixelsOff() {
     strip.show();
   }
 }
+
+
+
+void radioGreet() {
+  // greet immediately if this is the first time a greet has occured.
+  // this will only happen once per run.
+  if (lastGreetTime == 0) {
+    radioSendGreet();
+    lastGreetTime = millis();
+  }
+  
+  // greet once every 5 seconds
+  else if (millis() - lastGreetTime >= 10000) {
+    radioSendGreet();
+    
+    // log this greet occurance
+    lastGreetTime = millis();
+  }
+}
+
+void radioSendGreet() {
+  
+  // configure the payload
+  payload[0] = 'D';
+  payload[1] = 'C';
+  payload[2] = 'X';
+  payload[3] = 'H';
+  payload[4] = 'I';
+
+
+  
+  // send a warm greeting of radiation
+  xbee.send(zbRequest);
+
+
+  // flash TX indicator
+  flashLed(button0LEDPin, 1, 100);
+  
+  // after sending a tx request, we expect a status response
+  // wait up to half second for the status response
+  if (xbee.readPacket(1000)) {
+    // got a response!
+  
+    // should be a znet tx status              
+    if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
+      xbee.getResponse().getZBTxStatusResponse(zbResponse);
+  
+      // get the delivery status, the fifth byte
+      if (zbResponse.getDeliveryStatus() == SUCCESS) {
+        // success.  time to celebrate
+        flashLed(button0LEDPin, 5, 50);
+      } else {
+        // the remote XBee did not receive our packet. is it powered on?
+        flashLed(button1LEDPin, 3, 1000);
+      }
+    } else {
+      flashLed(button1LEDPin, 8, 100);
+    }
+  } else if (xbee.getResponse().isError()) {
+    //nss.print("Error reading packet.  Error code: ");  
+    //nss.println(xbee.getResponse().getErrorCode());
+    flashLed(button1LEDPin, 4, 50);
+  } else {
+    // local XBee did not provide a timely TX Status Response -- should not happen
+    flashLed(button1LEDPin, 2, 50);
+  }
+
+}
+
 
