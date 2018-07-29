@@ -60,7 +60,7 @@ The XBee is very sensitive when it comes to power. It needs as close to 3.3V as 
 #### switzerland-robust
 
 SH 0013A200
-SL 40B51A26
+SL 40B774EC
 
 #### borders-portals
 
@@ -103,6 +103,7 @@ The following people have helped this project in some way, and deserve a mention
   * (2) [18650 Cell holder](https://amzn.to/2JN0Lsh)
   * (2) 18650 Li-Ion 3.7V battery
   * (1) [Qunqi MP1584EN DC-DC Buck Converter](https://amzn.to/2EPh9oB)
+    * (1) [Alternative Power supply 001](https://www.ebay.com/itm/Durable-Quality-DC-DC-12V-To-3-3V-5V-Buck-Step-down-Power-Supply-Module-RH/113014911452?hash=item1a5036b1dc:g:4ecAAOSwzWpZjrM5)
   * (1) [MTM Survivor Dry Box with O-Ring](https://amzn.to/2JQuaSx)
   * (1) [Medium keyswitch](https://www.sparkfun.com/products/retired/11473)
   * (n) [24 AWG copper wire](https://amzn.to/2FrzB6S)
