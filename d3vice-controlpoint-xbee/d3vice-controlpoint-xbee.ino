@@ -74,6 +74,14 @@ int errorLed = button1LEDPin;
 
 
 /**
+ * LED state
+ */  
+uint8_t breathState = 0;
+float _sinIn = 4.712;
+bool _isInhale = 0;
+
+
+/**
  * Phase
  */
 int phase = 0;
@@ -83,7 +91,9 @@ int phase = 0;
  * Timers
  */
 unsigned long lastBroadcastHoldEvent = 0;
+unsigned long lastStandbyTime = 0;
 unsigned long lastXEvent = 0;
+unsigned long lastStrobeTime = 0;
 
 
 /**
@@ -117,7 +127,7 @@ Button team1Button = Button(1, button1Pin);
 //   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
 //   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(16, neopixelPin, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(8, neopixelPin, NEO_GRB + NEO_KHZ800);
 
 
 
@@ -321,7 +331,19 @@ void runPhase1() {
  * Admin marked this device as PENDING or INACTIVE. Just sit and wait for orders.
  */
 void runPhase2() {
-  flashLed(statusLed, 2, 5);
+  strobeLed();
+
+  if (lastStandbyTime == 0) {
+    lastStandbyTime = millis();
+    
+  }
+
+  // Every minute, see if the game has orders for me
+  if (millis() - lastStandbyTime >= 60000) {
+    phase = 1; // send HELLO and see what orders the server gives me
+    
+    lastStandbyTime = 0;
+  }
 }
 
 
@@ -765,4 +787,51 @@ void radioSendGreet() {
 
 }
 
+
+void strobeLed() {
+  if (millis() - lastStrobeTime >= 5000) {
+    for(uint16_t i=0; i<strip.numPixels(); i++) {
+      strip.setPixelColor(i, strip.Color(204, 150, 0));
+    }
+    strip.show();
+    lastStrobeTime = millis();
+  }
+
+  if (millis() - lastStrobeTime >= 50) {
+    for(uint16_t i=0; i<strip.numPixels(); i++) {
+      strip.setPixelColor(i, strip.Color(0, 0, 0));
+    }
+    strip.show();
+  }
+}
+
+void breatheLed() {
+  // sine wave loop
+  // makes LEDs pulsate smoothly
+  // greets https://www.sparkfun.com/tutorials/329
+  float sinOutRed, sinOutGrn;
+
+  // calculate the brightness of the LED "breath" using a sine wave
+  // increase the period of the sine wave since last tick
+  _sinIn = _sinIn + 0.01;
+
+  // if the sine wave is at the end of the desired period (one phase),
+  //   restart the phase
+  if (_sinIn > 10.995) {
+    _sinIn = 4.712;
+  }
+
+  // map the sine wave range (-1 to 1) to Red 0-204 and Green 0-150
+  // @todo A nice feature would be to improve this fade so it retains the truest color throughout the fade.
+  //       The problem is that 204-0 will go faster than 150-0, thus the green isn't fading as fast as it should
+  //       to maintain the spectrum difference as when it is in full-brightness.
+  sinOutRed = sin(_sinIn) * 102 + 102;
+  sinOutGrn = sin(_sinIn) * 76 + 76;
+
+  for(uint16_t i=0; i<strip.numPixels(); i++) {
+    strip.setPixelColor(i, strip.Color(sinOutRed, sinOutGrn, 0));
+    strip.show();
+  }
+  
+}
 

@@ -60,7 +60,7 @@ The XBee is very sensitive when it comes to power. It needs as close to 3.3V as 
 #### switzerland-robust
 
 SH 0013A200
-SL 40B774EC
+SL 40B51A26
 
 #### borders-portals
 
