@@ -7,9 +7,9 @@ Here are the desgigns for laser cut panels and mounts. Buttons, LEDs, and electr
 ### Mk1
 
 130mm x 213mm
-Rounded corners 15.5mm radius
-Large button holes 28mm diameter
-Small keyswitch hole 11.5mm diameter
+Rounded corners 15.5mm radius (( TOO SMALL ))
+Large button holes 28mm diameter 
+Small keyswitch hole 11.5mm diameter (( PERFECT ))
 NeoPixel hole 9mm diameter
 50mm depth
 
