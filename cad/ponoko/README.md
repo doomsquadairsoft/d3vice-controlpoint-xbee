@@ -25,5 +25,5 @@ Small keyswitch hole 11.5mm diameter
 NeoPixel hole 12.5mm
 85mm depth
 Material thickness 0.157 inches (4mm)
-Add holes for button protector/panel handle
+Add holes for button protector/panel handle. up to 25mm height, 70mm width.
 
