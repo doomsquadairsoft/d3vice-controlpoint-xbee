@@ -96,6 +96,8 @@ unsigned long lastXEvent = 0;
 unsigned long lastStrobeTime = 0;
 
 
+
+
 /**
  * Battlefield State
  */
@@ -415,14 +417,9 @@ void runPhase7() {
  * Battlefield (Running)
  */
 void runPhase19() {
-    flashLed(statusLed, 19, 50);
-    
+  
+  
 
-    // rate limiting
-    if (millis() - lastXEvent > 1000) {
- 
-
-  }
 }
 
 
