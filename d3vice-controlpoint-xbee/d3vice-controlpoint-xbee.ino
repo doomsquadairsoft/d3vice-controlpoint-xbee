@@ -57,6 +57,19 @@
 
 
 /**
+ * Constants
+ */
+const bool RED = 0;
+const bool BLU = 1;
+const int GRY = 2;
+const int BTN_RELEASED = 0;
+const int BTN_HELD = 1;
+const int BTN_PRESSED = 2;
+const int BTN_LOCKED = 3;
+
+
+
+/**
  * XBee configuration
  *
  * Here are the addresses the controlpoint may need
@@ -77,14 +90,14 @@ int errorLed = button1LEDPin;
  * LED state
  */  
 uint8_t breathState = 0;
-float _sinIn = 4.712;
-bool _isInhale = 0;
+float sinIn = 4.712;
+bool isInhale = 0;
 
 
 /**
  * Phase
  */
-int phase = 0;
+int phase = 19; // Startup in phase 19. In the future we should start in phase 0 (hello phase)
 
 
 /**
@@ -94,14 +107,16 @@ unsigned long lastBroadcastHoldEvent = 0;
 unsigned long lastStandbyTime = 0;
 unsigned long lastXEvent = 0;
 unsigned long lastStrobeTime = 0;
-
+unsigned long timeToCapture = 5000; // the time it takes to capture a point.
+unsigned long lastPhase19Check = 250;
+unsigned long lastCaptureTime = 0;
 
 
 
 /**
  * Battlefield State
  */
-uint8_t controllingTeam = 0;
+uint8_t lastControllingTeam = GRY;
 uint8_t redProgress = 0;
 uint8_t bluProgress = 0;
 
@@ -138,7 +153,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(8, neopixelPin, NEO_GRB + NEO_KHZ800
  */
 uint32_t redColor = strip.Color(255, 0, 0);
 uint32_t bluColor = strip.Color(0, 0, 255);
-uint32_t greyColor = strip.Color(50, 50, 50);
+uint32_t gryColor = strip.Color(50, 50, 50);
 
 
 
@@ -199,14 +214,24 @@ void loop()
     runPhase0();
   }
 
+  /**
+   * HELLO Phase
+   */
   else if (phase == 1) {
     runPhase1();
   }
 
+  /**
+   * Standby Phase
+   */
   else if (phase == 2) {
     runPhase2();
   }
 
+
+  /**
+   * 
+   */
   else if (phase == 3) {
     runPhase3();
   }
@@ -349,6 +374,9 @@ void runPhase2() {
 }
 
 
+/**
+ * 
+ */
 void runPhase3() {
   flashLed(statusLed, 3, 50);
 }
@@ -417,10 +445,155 @@ void runPhase7() {
  * Battlefield (Running)
  */
 void runPhase19() {
-  
-  
+
+  /**
+   * Run every 1/4 second.
+   * 
+   * If team RED button is held,
+   *   increment redProgress if it isn't maxed out yet
+   *   
+   */
+  if (millis() - lastPhase19Check > 250) {
+
+
+    // if red button is held, do stuff.
+    if (team0Button.getState() == BTN_HELD) {
+
+
+      // if there is any blueProgress, decrement it until empty
+      if (bluProgress > 0) {
+        decrementBluProgress();
+      }
+
+
+      // if blu progress is empty, and red progress is not, increment red progress until full.
+      else if (redProgress < 255) {
+        decrementRedProgress();
+      }
+    }
+
+
+
+
+    
+
+
+    // if blue button is held, do stuff.
+    else if (team1Button.getState() == BTN_HELD) {
+
+      // if redProgress exists, decrement until empty
+      if (redProgress > 0) {
+        decrementRedProgress();
+      }
+
+      // if bluProgress is less than full, increment blu progress
+      else if (bluProgress < 255) {
+        incrementBluProgress();
+      }
+    }
+
+
+    // reset the phase19 timer every time it runs
+    lastPhase19Check = millis();
+  }
+
+
+
+  // Update NeoPixels
+  displayState();
 
 }
+
+
+void decrementBluProgress() {
+  // points are accumulated at a rate of
+  // 255 points per n milliseconds
+  // where n is timeToCapture.
+  //
+  // Because phase19 runs 4 times a second,
+  // The algo which determines the amount to decrement per second is
+  // 255 / 5000 = 0.051 points per ms
+  // 0.051 * 1000 = 51 points per second
+  // 51 / 4 = 12.75 points per 1/4 second
+
+  // 255/n*250 = amount to decrement per 1/4 second (where n is timeToCapture)
+
+  // @NOTICE we must be careful to not cause an integer overflow!
+  uint8_t delta = 255 / timeToCapture * 250;
+  long result = bluProgress - delta;
+
+  if (result < 0) {
+    bluProgress = 0;
+  }
+
+  else {
+    bluProgress = bluProgress - delta;
+  }
+}
+
+
+
+
+void decrementRedProgress() {
+  uint8_t delta = 255 / timeToCapture * 250;
+  long result = redProgress - delta;
+
+  if (result < 0) {
+    redProgress = 0;
+  }
+
+  else {
+    redProgress = redProgress - delta;
+  }
+}
+
+
+
+
+void incrementBluProgress() {
+  uint8_t delta = 255 / timeToCapture * 250;
+  long result = bluProgress + delta;
+
+  if (result > 255) {
+    bluProgress = 255;
+    lastCaptureTime = millis();
+  }
+
+  else {
+    bluProgress = bluProgress + delta;
+  }
+}
+
+
+
+
+
+void incrementRedProgress() {
+  uint8_t delta = 255 / timeToCapture * 250;
+  long result = redProgress + delta;
+
+  if (result > 255) {
+    redProgress = 255;
+    lastCaptureTime = millis();
+  }
+
+  else {
+    redProgress = redProgress + delta;
+  }
+}
+
+
+/**
+ * @TODO
+ * 
+ * Log a button/capture event to PROGMEM.
+ * Later on when XBee connection is established,
+ * Sync events with controlpointer for later scoring.
+ */
+void logEvent() {
+  
+}
+
 
 
 void broadcastHoldEvent(int team) {
@@ -541,13 +714,13 @@ void listenForState() {
           // Controlling Team
           //if (rx.getData(7) < 5) {
           if (rx.getData(7) == '0') {
-            controllingTeam = 0;
+            //controllingTeam = 0;
           }
           else if (rx.getData(7) == '1') {
-            controllingTeam = 1;
+            //controllingTeam = 1;
           }
           else if (rx.getData(7) == '2') {
-            controllingTeam = 2;
+            //controllingTeam = 2;
           }
 
         }
@@ -576,76 +749,136 @@ void listenForState() {
 
 
 /**
- * Display the state
+ * Display the state on the NeoPixels
  */
 void displayState() {
 
   /**
-   * If either redProgress or bluProgress has changed in the past 5 seconds,
-   * show the progress bar of the team capturing the point
+   * If either redProgress or bluProgress has reached 255 in the past 5 seconds,
+   * pulsate the respective color indicating team capture
    */
+  if (lastCaptureTime != 0 && millis() - lastCaptureTime > 5000) {
+    breathState = pulsate(breathState);
+    for(uint16_t i=0; i<strip.numPixels(); i++) {
 
-//  // @TODO add timer which detets if bluProgress or redProgress has changed recently
-//  if (!true) {
-//    // show color coded progress bar on pixels 0-8
-//    // show color coded progress bar on pixels 16-9
-//
-//    // if red controls, show blu progress bar
-//    if (controllingTeam == 1) {
-//      uint8_t mappedBluProgress = map(bluProgress, 0, 99, 0, 7);
-//      
-//      for(uint16_t i=0; i<mappedBluProgress; i++) {
-//        strip.setPixelColor(i, bluColor);
-//        strip.show();
-//      }
-//    }
-//
-//    // if blu controls, show red progress bar
-//    else if (controllingTeam == 2) {
-//      uint8_t mappedRedProgress = map(redProgress, 0, 99, 0, 7);
-//      
-//      for(uint16_t i=0; i<mappedRedProgress; i++) {
-//        strip.setPixelColor(i, redColor);
-//        strip.show();
-//      }
-//    }
-//  }
+      if (redProgress == 255) {
+        strip.setPixelColor(i, strip.Color(breathState, 0, 0));
+      }
+      else if (bluProgress == 255) {
+        strip.setPixelColor(i, strip.Color(0, 0, breathState));
+      }
+      strip.show();
+    }
+  }
 
-  // bluProgress or redProgress has not changed within the last 5 seconds
-  //else {
+  
+  /**
+   * No full capture has occured in the last 5 seconds.
+   * If either team has full control (xProgress == 255), Show the color of the controlling team
+   * Display grey if no team has any progress points
+   */  
+  else if (
+    (redProgress == 255 && bluProgress == 255) ||
+    (redProgress == 0 && bluProgress == 0)
+  ) {
     
-    /**
-     * Show the color of the controlling team
-     */
-    if (controllingTeam == 0) {
+
+    if (redProgress == 0 && bluProgress == 0) {
       for(uint16_t i=0; i<strip.numPixels(); i++) {
-        strip.setPixelColor(i, greyColor);
+        strip.setPixelColor(i, gryColor);
         strip.show();
       }
     }
   
-    else if (controllingTeam == 1) {
+    else if (redProgress == 255) {
       for(uint16_t i=0; i<strip.numPixels(); i++) {
         strip.setPixelColor(i, redColor);
         strip.show();
       }
     }
   
-    else if (controllingTeam == 2) {
+    else if (bluProgress == 255) {
       for(uint16_t i=0; i<strip.numPixels(); i++) {
         strip.setPixelColor(i, bluColor);
         strip.show();
       }
     }
-
-  //}
-
+  }
 
 
-  
+  /**
+   * No full capture has occured in the last 5 seconds.
+   * If neither team has full control, show progress bars.
+   */
+  else {
+
+    // @TODO Revise
+      
+    // show color coded progress bar on pixels 0-8
+    // show color coded progress bar on pixels 16-9
+
+
+    uint8_t mappedBluProgress = map(bluProgress, 0, 255, 0, strip.numPixels());
+    uint8_t mappedRedProgress = map(redProgress, 0, 255, 0, strip.numPixels());
+
+
+
+    // clear all pixels
+    for(uint16_t i=0; i<strip.numPixels(); i++) {
+      strip.setPixelColor(i, gryColor);
+    }
+
+    /**
+     * lastControllingTeam was RED which means this will be a red bar
+     */
+    if (lastControllingTeam == RED) { 
+      for(uint16_t i=0; i<mappedRedProgress; i++) {
+        strip.setPixelColor(i, redColor);
+      }
+    }
+
+    else if (lastControllingTeam == BLU) {
+      for(uint16_t i=0; i<mappedBluProgress; i++) {
+        strip.setPixelColor(i, bluColor);
+      }
+    }
+
+    strip.show();
+    
+    
+    
+  }
 }
 
 
+
+
+/**
+ * Pulsate
+ * 
+ * Compute the brightness of the LED in a pulsating fashion.
+ */
+uint8_t pulsate(uint8_t breathState) {
+  
+  if (isInhale) {
+    if (breathState < 255) {
+      breathState += 4;
+    }
+    else { 
+      isInhale = 0;
+    }
+  }
+  else {
+    if (breathState > 0) {
+      breathState -= 4;
+    }
+    else {
+      isInhale = 1;
+    }
+  }
+  return breathState;
+
+}
 
 
 
@@ -810,20 +1043,20 @@ void breatheLed() {
 
   // calculate the brightness of the LED "breath" using a sine wave
   // increase the period of the sine wave since last tick
-  _sinIn = _sinIn + 0.01;
+  sinIn = sinIn + 0.01;
 
   // if the sine wave is at the end of the desired period (one phase),
   //   restart the phase
-  if (_sinIn > 10.995) {
-    _sinIn = 4.712;
+  if (sinIn > 10.995) {
+    sinIn = 4.712;
   }
 
   // map the sine wave range (-1 to 1) to Red 0-204 and Green 0-150
   // @todo A nice feature would be to improve this fade so it retains the truest color throughout the fade.
   //       The problem is that 204-0 will go faster than 150-0, thus the green isn't fading as fast as it should
   //       to maintain the spectrum difference as when it is in full-brightness.
-  sinOutRed = sin(_sinIn) * 102 + 102;
-  sinOutGrn = sin(_sinIn) * 76 + 76;
+  sinOutRed = sin(sinIn) * 102 + 102;
+  sinOutGrn = sin(sinIn) * 76 + 76;
 
   for(uint16_t i=0; i<strip.numPixels(); i++) {
     strip.setPixelColor(i, strip.Color(sinOutRed, sinOutGrn, 0));
