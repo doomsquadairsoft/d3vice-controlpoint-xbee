@@ -63,8 +63,8 @@ const bool RED = 0;
 const bool BLU = 1;
 const int GRY = 2;
 const int BTN_RELEASED = 0;
-const int BTN_HELD = 1;
-const int BTN_PRESSED = 2;
+const int BTN_PRESSED = 1;
+const int BTN_HELD = 2;
 const int BTN_LOCKED = 3;
 
 
@@ -97,7 +97,7 @@ bool isInhale = 0;
 /**
  * Phase
  */
-int phase = 19; // Startup in phase 19. In the future we should start in phase 0 (hello phase)
+int phase = 0; // Startup in phase 19. In the future we should start in phase 0 (hello phase)
 
 
 /**
@@ -155,7 +155,9 @@ uint32_t redColor = strip.Color(255, 0, 0);
 uint32_t bluColor = strip.Color(0, 0, 255);
 uint32_t gryColor = strip.Color(50, 50, 50);
 
-
+uint32_t redColorDim = strip.Color(85, 0, 0);
+uint32_t bluColorDim = strip.Color(0, 85, 0);
+uint32_t gryColorDim = strip.Color(17, 17, 17);
 
 
 
@@ -271,7 +273,9 @@ void runPhase0() {
   // run a test sequence which the user can observe to verify that all the
   // lights and sounds are functioning properly.
   testSequence();
-  phase += 1;
+  //phase += 1;
+
+  phase = 19; // in the future this should go to phase 1 (HELLO phase)
 }
 
 /**
@@ -455,9 +459,8 @@ void runPhase19() {
    */
   if (millis() - lastPhase19Check > 250) {
 
-
     // if red button is held, do stuff.
-    if (team0Button.getState() == BTN_HELD) {
+    if (team0Button.getState() == BTN_PRESSED || team0Button.getState() == BTN_HELD) {
 
 
       // if there is any blueProgress, decrement it until empty
@@ -468,7 +471,7 @@ void runPhase19() {
 
       // if blu progress is empty, and red progress is not, increment red progress until full.
       else if (redProgress < 255) {
-        decrementRedProgress();
+        incrementRedProgress();
       }
     }
 
@@ -479,7 +482,7 @@ void runPhase19() {
 
 
     // if blue button is held, do stuff.
-    else if (team1Button.getState() == BTN_HELD) {
+    else if (team1Button.getState() == BTN_PRESSED || team1Button.getState() == BTN_HELD) {
 
       // if redProgress exists, decrement until empty
       if (redProgress > 0) {
@@ -518,32 +521,32 @@ void decrementBluProgress() {
 
   // 255/n*250 = amount to decrement per 1/4 second (where n is timeToCapture)
 
-  // @NOTICE we must be careful to not cause an integer overflow!
-  uint8_t delta = 255 / timeToCapture * 250;
-  long result = bluProgress - delta;
 
-  if (result < 0) {
+  float delta = 255.0 / timeToCapture * 250;
+  unsigned long result = bluProgress - delta;
+  if (result <= 0) {
     bluProgress = 0;
   }
-
+  
   else {
-    bluProgress = bluProgress - delta;
+    bluProgress -= delta;
   }
+  
 }
 
 
 
 
 void decrementRedProgress() {
-  uint8_t delta = 255 / timeToCapture * 250;
-  long result = redProgress - delta;
-
-  if (result < 0) {
+ 
+  float delta = 255.0 / timeToCapture * 250;
+  unsigned long result = redProgress - delta;
+  if (result <= 0) {
     redProgress = 0;
   }
-
+  
   else {
-    redProgress = redProgress - delta;
+    redProgress -= delta;
   }
 }
 
@@ -551,16 +554,17 @@ void decrementRedProgress() {
 
 
 void incrementBluProgress() {
-  uint8_t delta = 255 / timeToCapture * 250;
+  uint8_t delta = 255.0 / timeToCapture * 250;
   long result = bluProgress + delta;
-
-  if (result > 255) {
+  
+  if (result >= 255) {
     bluProgress = 255;
     lastCaptureTime = millis();
+    lastControllingTeam = BLU;
   }
 
   else {
-    bluProgress = bluProgress + delta;
+    bluProgress += delta;
   }
 }
 
@@ -569,16 +573,19 @@ void incrementBluProgress() {
 
 
 void incrementRedProgress() {
-  uint8_t delta = 255 / timeToCapture * 250;
-  long result = redProgress + delta;
 
-  if (result > 255) {
+  
+  uint8_t delta = 255.0 / timeToCapture * 250;
+  long result = redProgress + delta;
+  
+  if (result >= 255) {
     redProgress = 255;
     lastCaptureTime = millis();
+    lastControllingTeam = RED;
   }
 
   else {
-    redProgress = redProgress + delta;
+    redProgress += delta;
   }
 }
 
@@ -757,7 +764,7 @@ void displayState() {
    * If either redProgress or bluProgress has reached 255 in the past 5 seconds,
    * pulsate the respective color indicating team capture
    */
-  if (lastCaptureTime != 0 && millis() - lastCaptureTime > 5000) {
+  if (lastCaptureTime != 0 && millis() - lastCaptureTime < 5000) {
     breathState = pulsate(breathState);
     for(uint16_t i=0; i<strip.numPixels(); i++) {
 
@@ -785,21 +792,21 @@ void displayState() {
 
     if (redProgress == 0 && bluProgress == 0) {
       for(uint16_t i=0; i<strip.numPixels(); i++) {
-        strip.setPixelColor(i, gryColor);
+        strip.setPixelColor(i, gryColorDim);
         strip.show();
       }
     }
   
     else if (redProgress == 255) {
       for(uint16_t i=0; i<strip.numPixels(); i++) {
-        strip.setPixelColor(i, redColor);
+        strip.setPixelColor(i, redColorDim);
         strip.show();
       }
     }
   
     else if (bluProgress == 255) {
       for(uint16_t i=0; i<strip.numPixels(); i++) {
-        strip.setPixelColor(i, bluColor);
+        strip.setPixelColor(i, bluColorDim);
         strip.show();
       }
     }
