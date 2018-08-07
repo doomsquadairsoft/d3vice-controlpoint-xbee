@@ -117,6 +117,7 @@ unsigned long lastCaptureTime = 0;
  * Battlefield State
  */
 uint8_t lastControllingTeam = GRY;
+uint8_t lastCappingTeam = GRY;
 uint8_t redProgress = 0;
 uint8_t bluProgress = 0;
 
@@ -523,7 +524,7 @@ void decrementBluProgress() {
 
 
   float delta = 255.0 / timeToCapture * 250;
-  unsigned long result = bluProgress - delta;
+  long result = bluProgress - delta;
   if (result <= 0) {
     bluProgress = 0;
   }
@@ -540,7 +541,7 @@ void decrementBluProgress() {
 void decrementRedProgress() {
  
   float delta = 255.0 / timeToCapture * 250;
-  unsigned long result = redProgress - delta;
+  long result = redProgress - delta;
   if (result <= 0) {
     redProgress = 0;
   }
@@ -835,20 +836,40 @@ void displayState() {
       strip.setPixelColor(i, gryColor);
     }
 
-    /**
-     * lastControllingTeam was RED which means this will be a red bar
-     */
-    if (lastControllingTeam == RED) { 
-      for(uint16_t i=0; i<mappedRedProgress; i++) {
-        strip.setPixelColor(i, redColor);
-      }
-    }
 
-    else if (lastControllingTeam == BLU) {
-      for(uint16_t i=0; i<mappedBluProgress; i++) {
+//    /**
+//     * lastControllingTeam was RED which means this will be a red bar
+//     */
+//    if (lastControllingTeam == RED) { 
+//      for(uint16_t i=0; i<mappedRedProgress; i++) {
+//        strip.setPixelColor(i, redColor);
+//      }
+//    }
+//
+//    else if (lastControllingTeam == BLU) {
+//      for(uint16_t i=0; i<mappedBluProgress; i++) {
+//        strip.setPixelColor(i, bluColor);
+//      }
+//    }
+
+
+    //else {
+
+
+
+    
+    if (redProgress == 0) {
+      for (uint16_t i=0; i<mappedBluProgress; i++) {
         strip.setPixelColor(i, bluColor);
       }
     }
+
+    else if (bluProgress == 0) {
+      for (uint16_t i=0; i<mappedRedProgress; i++) {
+        strip.setPixelColor(i, redColor);
+      }
+    }
+    //}
 
     strip.show();
     
