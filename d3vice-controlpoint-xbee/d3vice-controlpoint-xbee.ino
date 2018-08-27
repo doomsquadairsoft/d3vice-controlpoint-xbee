@@ -463,6 +463,7 @@ void runPhase19() {
     // if red button is held, do stuff.
     if (team0Button.getState() == BTN_PRESSED || team0Button.getState() == BTN_HELD) {
 
+      lastCappingTeam = RED;
 
       // if there is any blueProgress, decrement it until empty
       if (bluProgress > 0) {
@@ -485,6 +486,8 @@ void runPhase19() {
     // if blue button is held, do stuff.
     else if (team1Button.getState() == BTN_PRESSED || team1Button.getState() == BTN_HELD) {
 
+      lastCappingTeam = BLU;
+
       // if redProgress exists, decrement until empty
       if (redProgress > 0) {
         decrementRedProgress();
@@ -494,6 +497,26 @@ void runPhase19() {
       else if (bluProgress < 255) {
         incrementBluProgress();
       }
+    }
+
+
+
+    // if no button is pressed, do stuff
+    else {
+      if (lastControllingTeam == BLU && redProgress < 255 ||
+          lastCappingTeam == RED && redProgress < 255
+      ) {
+        decrementRedProgress();
+      }
+
+      else if (lastControllingTeam == RED && bluProgress < 255 ||
+               lastCappingTeam == BLU && bluProgress < 255
+      ) {
+        decrementBluProgress();
+      }
+      
+
+      
     }
 
 

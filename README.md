@@ -107,3 +107,5 @@ The following people have helped this project in some way, and deserve a mention
   * (1) [MTM Survivor Dry Box with O-Ring](https://amzn.to/2JQuaSx)
   * (1) [Medium keyswitch](https://www.sparkfun.com/products/retired/11473)
   * (n) [24 AWG copper wire](https://amzn.to/2FrzB6S)
+  * (2) [https://www.mouser.com/ProductDetail/RAF-Electronic-Hardware/8075-440-A-24?qs=%2fha2pyFadugv9UkFwjFj1mse%2fGe0gQVLL5igE44%2fsfXi69vVZQTh6A%3d%3d](Chasis handles)
+  * (?) [4-40 bolts](https://www.banggood.com/4-40-UNC-Stainless-Steel-Hex-Socket-Head-Cap-Screws-Nuts-Assortment-Kit-126pcs-p-1147256.html?rmmds=search&cur_warehouse=CN)
