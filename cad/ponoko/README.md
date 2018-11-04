@@ -4,7 +4,7 @@ Here are the desgigns for laser cut panels and mounts. Buttons, LEDs, and electr
 
 ## Design notes
 
-### Mk1
+### Mk1 (cut)
 
 130mm x 213mm **PERFECT**
 Rounded corners 15.5mm radius **TOO SMALL**
@@ -16,7 +16,7 @@ Material thickness 0.157 inches 4mm
 
 
 
-### Mk2
+### Mk2 (cut)
 
 130mm x 213mm
 Rounded corners 25mm diameter
@@ -26,4 +26,13 @@ NeoPixel hole 12.5mm
 85mm depth
 Material thickness 0.157 inches (4mm)
 Add holes for button protector/panel handle. up to 25mm height, 70mm width.
+handle holes 2.234mm **TOO SMALL**
 
+
+### Mk3 (development)
+
+Enlarged handle holes to 2.434mm **COMPLETE**
+Removed neopixel hole **COMPLETE**
+Added SMA-RP hole and mounting platform **COMPLETE**
+Add mounting holes for PCB (2.234mm diameter) **COMPLETE**
+Add mounting holes for power supply **INCOMPLETE**
