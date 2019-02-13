@@ -10,8 +10,11 @@ If you have used and enjoy this code base, I'd love to hear from you!
 
 ## Development setup process
 
-  * Download, Install, Open Arduino IDE >=1.8.5 from https://arduino.cc/
-  * Set board in `Tools > Board(...) > Arduino Fio`
+  * Download, Install [Atom editor](https://atom.io)
+  * Download, Install [Platformio](https://platformio.org/install/ide?install=atom) Atom package
+  * Restart atom. Open Atom & PlatformIO then import this repo.
+
+??? @TODO once I figure out the process after this
   * Install contributed libraries `Sketch > Include Libraries > Manage Libraries`
     * Adafruit NeoPixel library
     * XBee-Arduino library
@@ -110,3 +113,4 @@ The following people have helped this project in some way, and deserve a mention
   * (2) [Chasis handles](https://www.mouser.com/ProductDetail/RAF-Electronic-Hardware/8075-440-A-24?qs=%2fha2pyFadugv9UkFwjFj1mse%2fGe0gQVLL5igE44%2fsfXi69vVZQTh6A%3d%3d)
   * (?) [4-40 bolts](https://www.banggood.com/4-40-UNC-Stainless-Steel-Hex-Socket-Head-Cap-Screws-Nuts-Assortment-Kit-126pcs-p-1147256.html?rmmds=search&cur_warehouse=CN)
   * (?) [LED Strip Housing](https://www.ebay.com/itm/50cm-U-V-YW-Aluminium-Housing-Holder-For-LED-Strip-Light-Bar-Under-Cabinet-Lamp/372358319157?hash=item56b2490c35:m:mi8XunysgHwlc1OMXDJ0slw:rk:29:pf:0)
+  * (2) [Arcade Button Quick-Connect Wire Pairs - 0.11"](https://www.adafruit.com/product/1152)

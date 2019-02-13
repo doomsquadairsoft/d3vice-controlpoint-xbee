@@ -29,10 +29,17 @@ Add holes for button protector/panel handle. up to 25mm height, 70mm width.
 handle holes 2.234mm **TOO SMALL**
 
 
-### Mk3 (development)
+### Mk3 (on order)
 
 Enlarged handle holes to 2.434mm **COMPLETE**
 Removed neopixel hole **COMPLETE**
 Added SMA-RP hole and mounting platform **COMPLETE**
 Add mounting holes for PCB (2.234mm diameter) **COMPLETE**
-Add mounting holes for power supply **INCOMPLETE**
+Added font labels 'Bitstream Vera Sans'. **COMPLETE**
+Added DooM Squad logo & Model name 'DooM D3VICE 2B' **COMPLETE**
+Added cutout for neopixel strip housing **COMPLETE**
+
+
+### Mk4 (future)
+
+Add mini (DooM Squad branded) airsoft targets using extra space P2 (example: https://www.thingiverse.com/thing:1920712) 
