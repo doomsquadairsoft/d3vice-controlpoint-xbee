@@ -87,11 +87,13 @@ The following people have helped this project in some way, and deserve a mention
   * [x] Fix endless beep on phase >=1
   * [x] Add button hold logic
   * [x] Implement ButtonManager
+  * [ ] Try LoRa radio [Moteino](https://lowpowerlab.com/shop/product/119) looks nice.
 
 ## Parts list
 
-  * (2) 220 Ohm resistor (JP3 button LEDs)
-  * (2) 10K Ohm resistor (JP4 button switches)
+  * (2) 220 Ohm resistor (JP3 button LEDs) DEPRECATED -- The buttons have their own capacitor
+  * (3) 10K Ohm resistor (x2 JP4 button switches, x1 Battery Voltage Divider)
+  * (1) 100K Ohm resistor (Battery voltage divider)
   * (1) 470 Ohm resistor (R1 Level shifter)
   * (1) 100 Ohm resistor (R2 buzzer)
   * (1) [Arduino Fio](https://amzn.to/2vkoAoj)
