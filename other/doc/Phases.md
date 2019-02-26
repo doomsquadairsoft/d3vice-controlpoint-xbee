@@ -20,7 +20,11 @@ Phase 14 - Diffusal paused - gold
 Phase 15 - -
 Phase 16 - -
 Phase 17 - -
-Phase 18 - Battlefield select ??? -
-Phase 19 - Battlefield running -
-Phase 20 - Battlefield paused -
-Phase 21 - Battlefield win -
+Phase 18 - Sector Control select ??? -
+Phase 19 - Sector Control running -
+Phase 20 - Sector Control paused -
+Phase 21 - Sector Control win -
+Phase 22 -
+Phase 23 -
+Phase 24 -
+Phase 25 - SectorControl alternate mode
