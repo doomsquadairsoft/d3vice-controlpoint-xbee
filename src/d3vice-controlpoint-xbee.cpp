@@ -38,11 +38,13 @@
  */
 #include <Adafruit_NeoPixel.h>
 #include <XBee.h>
+#include <JC_Button.h> // https://github.com/JChristensen/JC_Button
+
 
 /**
  * DooM Squad Libraries
  */
-#include "Button.h"
+//#include "Button.h"
 
 
 
@@ -117,7 +119,7 @@ unsigned long lastCaptureTime = 0;
 
 
 /**
- * Battlefield State
+ * Sector Control State
  */
 uint8_t lastControllingTeam = GRY;
 uint8_t lastCappingTeam = GRY;
@@ -146,8 +148,8 @@ XBeeAddress64 gatewayAddress = XBeeAddress64(xbeeGatewaySH, xbeeGatewaySL);
 ZBTxRequest zbRequest = ZBTxRequest(gatewayAddress, payload, payloadLength); // address, payload, size
 ZBTxStatusResponse zbResponse = ZBTxStatusResponse();
 ZBRxResponse rx = ZBRxResponse();
-Button team0Button = Button(0, button0Pin);
-Button team1Button = Button(1, button1Pin);
+Button team0Button = Button(button0Pin);
+Button team1Button = Button(button1Pin);
 
 
 // Parameter 1 = number of pixels in strip
@@ -165,9 +167,9 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(8, neopixelPin, NEO_GRB + NEO_KHZ800
 /**
  * configuration of the team's color (for neopixels)
  */
-uint32_t redColor = strip.Color(255, 0, 0);
-uint32_t bluColor = strip.Color(0, 0, 255);
-uint32_t gryColor = strip.Color(50, 50, 50);
+uint32_t redColorBlinding = strip.Color(255, 0, 0);
+uint32_t bluColorBlinding = strip.Color(0, 0, 255);
+uint32_t gryColorBlinding = strip.Color(50, 50, 50);
 
 uint32_t redColorDim = strip.Color(85, 0, 0);
 uint32_t bluColorDim = strip.Color(0, 85, 0);
@@ -193,6 +195,9 @@ void setup() {
         pinMode(batteryPin, INPUT);
         pinMode(sleepPin, OUTPUT);
         digitalWrite(sleepPin, LOW);
+
+        team0Button.begin();
+        team1Button.begin();
 
         Serial.begin(57600);
         xbee.setSerial(Serial);
@@ -327,7 +332,6 @@ void decrementBluProgress() {
 
 
 void decrementRedProgress() {
-
         float delta = 255.0 / timeToCapture * 250;
         long result = redProgress - delta;
         if (result <= 0) {
@@ -555,7 +559,7 @@ void listenForState() {
 uint8_t pulsate(uint8_t breathState) {
 
         if (isInhale) {
-                if (breathState < 255) {
+                if (breathState < 63) {
                         breathState += 4;
                 }
                 else {
@@ -653,7 +657,7 @@ void displayState() {
 
                 // clear all pixels
                 for(uint16_t i=0; i<strip.numPixels(); i++) {
-                        strip.setPixelColor(i, gryColor);
+                        strip.setPixelColor(i, gryColorDim);
                 }
 
 
@@ -680,13 +684,13 @@ void displayState() {
 
                 if (redProgress == 0) {
                         for (uint16_t i=0; i<mappedBluProgress; i++) {
-                                strip.setPixelColor(i, bluColor);
+                                strip.setPixelColor(i, bluColorDim);
                         }
                 }
 
                 else if (bluProgress == 0) {
                         for (uint16_t i=0; i<mappedRedProgress; i++) {
-                                strip.setPixelColor(i, redColor);
+                                strip.setPixelColor(i, redColorDim);
                         }
                 }
                 //}
@@ -714,6 +718,80 @@ void pixelsOff() {
         for(uint16_t i=0; i<strip.numPixels(); i++) {
                 strip.setPixelColor(i, strip.Color(0, 0, 0));
                 strip.show();
+        }
+}
+
+void radioSendPress(boolean teamNumber) {
+        // configure the payload
+        payload[0] = 'D';
+        payload[1] = 'C';
+        payload[2] = 'X';
+        payload[3] = 'B';
+        payload[4] = 'P';
+        payload[5] = teamNumber;
+
+        // send a warm greeting of radiation
+        xbee.send(zbRequest);
+
+        // after sending a tx request, we expect a status response
+        // wait up to half second for the status response
+        if (xbee.readPacket(1000)) {
+                // got a response!
+
+                // should be a znet tx status
+                if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
+                        xbee.getResponse().getZBTxStatusResponse(zbResponse);
+
+                        // get the delivery status, the fifth byte
+                        if (zbResponse.getDeliveryStatus() == SUCCESS) {
+                                // success.  time to celebrate
+                        } else {
+                                // the remote XBee did not receive our packet. is it powered on?
+                        }
+                } else {
+                }
+        } else if (xbee.getResponse().isError()) {
+                //nss.print("Error reading packet.  Error code: ");
+                //nss.println(xbee.getResponse().getErrorCode());
+        } else {
+                // local XBee did not provide a timely TX Status Response -- should not happen
+        }
+}
+
+void radioSendRelease(boolean teamNumber) {
+        // configure the payload
+        payload[0] = 'D';
+        payload[1] = 'C';
+        payload[2] = 'X';
+        payload[3] = 'B';
+        payload[4] = 'R';
+        payload[5] = teamNumber;
+
+        // send a warm greeting of radiation
+        xbee.send(zbRequest);
+
+        // after sending a tx request, we expect a status response
+        // wait up to half second for the status response
+        if (xbee.readPacket(1000)) {
+                // got a response!
+
+                // should be a znet tx status
+                if (xbee.getResponse().getApiId() == ZB_TX_STATUS_RESPONSE) {
+                        xbee.getResponse().getZBTxStatusResponse(zbResponse);
+
+                        // get the delivery status, the fifth byte
+                        if (zbResponse.getDeliveryStatus() == SUCCESS) {
+                                // success.  time to celebrate
+                        } else {
+                                // the remote XBee did not receive our packet. is it powered on?
+                        }
+                } else {
+                }
+        } else if (xbee.getResponse().isError()) {
+                //nss.print("Error reading packet.  Error code: ");
+                //nss.println(xbee.getResponse().getErrorCode());
+        } else {
+                // local XBee did not provide a timely TX Status Response -- should not happen
         }
 }
 
@@ -837,7 +915,7 @@ void radioGreet() {
 void strobeLed() {
         if (millis() - lastStrobeTime >= 5000) {
                 for(uint16_t i=0; i<strip.numPixels(); i++) {
-                        strip.setPixelColor(i, strip.Color(204, 150, 0));
+                        strip.setPixelColor(i, strip.Color(84, 62, 0));
                 }
                 strip.show();
                 lastStrobeTime = millis();
@@ -942,7 +1020,7 @@ void runPhase0() {
         testSequence();
         //phase += 1;
 
-        phase = 8; // in the future this should go to phase 1 (HELLO phase)
+        phase = 1; // We go straight to phase 1 where DooM HQ (or gateway) will tell this d3vice what to do
 }
 
 /**
@@ -960,7 +1038,7 @@ void runPhase1() {
 
 
         /**
-         * Listen for orders from Controlpointer
+         * Listen for orders from Controlpointer/DooM HQ
          */
         xbee.readPacket();
         if (xbee.getResponse().isAvailable()) {
@@ -1025,6 +1103,19 @@ void runPhase1() {
                                 // DCXSBY means our order is to standby
                                 phase = 2;
                         }
+
+                        else if (
+                                rx.getData(0) == 'D' &&
+                                rx.getData(1) == 'C' &&
+                                rx.getData(2) == 'X' &&
+                                rx.getData(3) == 'P' &&
+                                rx.getData(4) == '2' &&
+                                rx.getData(5) == '5'
+                        )
+                        {
+                                // DCXP25 Means go to phase 25
+                                phase = 25;
+                        }
                 }
         }
 }
@@ -1066,27 +1157,27 @@ void runPhase3() {
 
 void runPhase4() {
 
+        // deprecated
+        // /**
+        //  * If team 0 button is held, broadast
+        //  */
+        // if (team0Button.wasPressed()) {
+        //         //broadcastHoldEvent(0);
+        // }
+        //
+        // else if (team1Button.getState() == 2) {
+        //         broadcastHoldEvent(1);
+        // }
 
-        /**
-         * If team 0 button is held, broadast
-         */
-        if (team0Button.getState() == 2) {
-                broadcastHoldEvent(0);
-        }
-
-        else if (team1Button.getState() == 2) {
-                broadcastHoldEvent(1);
-        }
-
-        /**
-         * Listen for state updates
-         */
-        listenForState();
-
-        /**
-         * update LEDs according to state
-         */
-        displayState();
+        // /**
+        //  * Listen for state updates
+        //  */
+        // listenForState();
+        //
+        // /**
+        //  * update LEDs according to state
+        //  */
+        // displayState();
 
 }
 
@@ -1103,20 +1194,20 @@ void runPhase4() {
  */
 void runPhase7() {
 
-        if (team0Button.getState() == 1 ||
-            team1Button.getState() == 1) {
+        if (team0Button.wasPressed() ||
+            team1Button.wasPressed()) {
                 flashLed(buzzerPin, 1, 100);
         }
 
-        else if (team0Button.getState() == 2 ||
-                 team1Button.getState() == 2) {
+        else if (team0Button.wasPressed() ||
+                 team1Button.wasPressed()) {
                 flashLed(buzzerPin, 2, 100);
         }
 
-        else if (team0Button.getState() == 3 ||
-                 team1Button.getState() == 3) {
-                flashLed(buzzerPin, 3, 100);
-        }
+        // else if (team0Button.getState() == 3 ||
+        //          team1Button.getState() == 3) {
+        //         flashLed(buzzerPin, 3, 100);
+        // }
 
         delay(300);
 
@@ -1146,18 +1237,13 @@ void runPhase9() {
 
                 }
         }
-        if (team0Button.getState() == 1 ||
-            team1Button.getState() == 1) {
+        if (team0Button.wasPressed() ||
+            team1Button.wasPressed()) {
                 flashLed(buzzerPin, 1, 100);
         }
 
-        else if (team0Button.getState() == 2 ||
-                 team1Button.getState() == 2) {
-                flashLed(buzzerPin, 2, 100);
-        }
-
-        else if (team0Button.getState() == 3 ||
-                 team1Button.getState() == 3) {
+        else if (team0Button.wasReleased() ||
+                 team1Button.wasReleased()) {
                 flashLed(buzzerPin, 3, 100);
         }
 
@@ -1171,7 +1257,7 @@ void runPhase9() {
 /**
  * PHASE 19
  *
- * Battlefield (Running)
+ * Sector Control (Running)
  */
 void runPhase19() {
 
@@ -1185,7 +1271,7 @@ void runPhase19() {
         if (millis() - lastPhase19Check > 250) {
 
                 // if red button is held, do stuff.
-                if (team0Button.getState() == BTN_PRESSED || team0Button.getState() == BTN_HELD) {
+                if (team0Button.wasPressed()) {
 
                         lastCappingTeam = RED;
 
@@ -1208,7 +1294,7 @@ void runPhase19() {
 
 
                 // if blue button is held, do stuff.
-                else if (team1Button.getState() == BTN_PRESSED || team1Button.getState() == BTN_HELD) {
+                else if (team1Button.wasPressed()) {
 
                         lastCappingTeam = BLU;
 
@@ -1256,12 +1342,81 @@ void runPhase19() {
 }
 
 /**
- * Battlefield paused phase
+ * Sector Control paused phase
  */
 void runPhase20() {
 
 }
 
+
+/**
+ * Dumb mode (no local state-- DooM HQ handles it)
+ */
+void runPhase25() {
+
+        // If button is pressed or released, send event to gameserver
+        if (team0Button.wasPressed()) {
+                radioSendPress(RED);
+        }
+        else if (team1Button.wasPressed()) {
+                radioSendPress(BLU);
+        }
+        else if (team0Button.wasReleased()) {
+                radioSendRelease(RED);
+        }
+        else if (team1Button.wasReleased()) {
+                radioSendRelease(BLU);
+        }
+
+
+        /**
+         * Listen for orders from Controlpointer/DooM HQ
+         */
+        xbee.readPacket();
+        if (xbee.getResponse().isAvailable()) {
+                // we got a response
+                if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE) {
+                        xbee.getResponse().getZBRxResponse(rx);
+
+                        if (rx.getOption() == ZB_PACKET_ACKNOWLEDGED) {
+                                flashLed(statusLed, 10, 10);
+                        }
+
+                        else {
+                                flashLed(errorLed, 2, 20);
+                        }
+
+
+                        // if we get a battery request (DC), respond with voltage
+                        if (
+                                rx.getData(0) == 'D' &&
+                                rx.getData(1) == 'C' &&
+                                rx.getData(2) == 'X' &&
+                                rx.getData(3) == 'D' &&
+                                rx.getData(4) == 'C'
+                                )
+                        {
+                                // DCXDC means go to BATT check phase (it returns afterwards)
+                                lastPhase = 25;
+                                phase = 8; // batt check phase
+                        }
+
+                        // if we get a LED state
+                        else if (
+                                rx.getData(0) == 'D' &&
+                                rx.getData(1) == 'C' &&
+                                rx.getData(2) == 'X' &&
+                                rx.getData(3) == 'S' &&
+                                rx.getData(4) == 'T' &&
+                                rx.getData(5) == 'E'
+                                )
+                        {
+                                // DCXSTE means we are getting a state report
+                                phase = 2;
+                        }
+                }
+        }
+}
 
 
 
@@ -1345,8 +1500,8 @@ void radioCheckIn() {
 void loop()
 {
         // poll pushbuttons for activity
-        team0Button.update();
-        team1Button.update();
+        team0Button.read();
+        team1Button.read();
 
         // check radio for commands
         radioCheckIn();
@@ -1391,6 +1546,10 @@ void loop()
 
         else if (phase == 20) {
                 runPhase20();
+        }
+
+        else if (phase == 25) {
+                runPhase25();
         }
 
 }
