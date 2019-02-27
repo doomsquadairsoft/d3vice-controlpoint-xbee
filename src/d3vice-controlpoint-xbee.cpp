@@ -96,6 +96,7 @@ int errorLed = button1LEDPin;
 uint8_t breathState = 0;
 float sinIn = 4.712;
 bool isInhale = 0;
+bool isLit = 0;
 
 
 /**
@@ -114,6 +115,7 @@ unsigned long lastXEvent = 0;
 unsigned long lastStrobeTime = 0;
 unsigned long timeToCapture = 5000; // the time it takes to capture a point.
 unsigned long lastPhase19Check = 250;
+unsigned long lastPhase25Check = 250;
 unsigned long lastCaptureTime = 0;
 
 
@@ -137,6 +139,8 @@ float R1 = 100000.00; // resistance of R1 (100K) -see text!
 float R2 = 10000.00; // resistance of R2 (10K) - see text!
 int value = 0;
 
+
+
 /**
  * instantiate class objects
  */
@@ -148,8 +152,8 @@ XBeeAddress64 gatewayAddress = XBeeAddress64(xbeeGatewaySH, xbeeGatewaySL);
 ZBTxRequest zbRequest = ZBTxRequest(gatewayAddress, payload, payloadLength); // address, payload, size
 ZBTxStatusResponse zbResponse = ZBTxStatusResponse();
 ZBRxResponse rx = ZBRxResponse();
-Button team0Button = Button(button0Pin);
-Button team1Button = Button(button1Pin);
+Button team0Button = Button(button0Pin, 25, true, false);
+Button team1Button = Button(button1Pin, 25, true, false);
 
 
 // Parameter 1 = number of pixels in strip
@@ -172,7 +176,7 @@ uint32_t bluColorBlinding = strip.Color(0, 0, 255);
 uint32_t gryColorBlinding = strip.Color(50, 50, 50);
 
 uint32_t redColorDim = strip.Color(85, 0, 0);
-uint32_t bluColorDim = strip.Color(0, 85, 0);
+uint32_t bluColorDim = strip.Color(0, 0, 85);
 uint32_t gryColorDim = strip.Color(17, 17, 17);
 
 
@@ -231,7 +235,27 @@ void setup() {
 
 
 
+void setProgressBar(bool teamNumber, int percentage) {
+        // determine how many pixels to turn on
+        int split = (100 / strip.numPixels());
+        int numberOfNeopixelsToLight = (percentage / split);
 
+        // clear all neopixels
+        for(uint16_t i=0; i<strip.numPixels(); i++) {
+                strip.setPixelColor(i, strip.Color(0, 0, 0));
+        }
+
+        // light up the necessary neopixels
+        for(uint16_t i=0; i<numberOfNeopixelsToLight; i++) {
+                if (teamNumber == 0) {
+                        strip.setPixelColor(i, redColorDim);
+                }
+                else {
+                        strip.setPixelColor(i, bluColorDim);
+                }
+        }
+        strip.show();
+}
 
 
 void flashLed(int pin, int times, int wait) {
@@ -426,7 +450,6 @@ void broadcastHoldEvent(int team) {
 
 
         // flash TX indicator
-        flashLed(statusLed, 1, 100);
 
         // after sending a tx request, we expect a status response
         // wait up to half second for the status response
@@ -440,10 +463,8 @@ void broadcastHoldEvent(int team) {
                         // get the delivery status, the fifth byte
                         if (zbResponse.getDeliveryStatus() == SUCCESS) {
                                 // success.  time to celebrate
-                                flashLed(statusLed, 5, 100);
                         } else {
                                 // the remote XBee did not receive our packet. is it powered on?
-                                flashLed(errorLed, 3, 500);
                         }
                 }
         } else if (xbee.getResponse().isError()) {
@@ -473,11 +494,9 @@ void listenForState() {
                         xbee.getResponse().getZBRxResponse(rx);
 
                         if (rx.getOption() == ZB_PACKET_ACKNOWLEDGED) {
-                                flashLed(statusLed, 10, 10);
                         }
 
                         else {
-                                flashLed(errorLed, 2, 20);
                         }
 
 
@@ -505,7 +524,6 @@ void listenForState() {
                                 )
                         {
                                 // we're getting a state update (ST)
-                                //flashLed(buzzerPin, 6, 150);
 
                                 if (rx.getData(5) == 'C' &&
                                     rx.getData(6) == 'T'
@@ -809,8 +827,6 @@ void radioSendBatt(int vcc) {
         // send a warm greeting of radiation
         xbee.send(zbRequest);
 
-        // flash TX indicator
-        flashLed(button0LEDPin, 1, 100);
 
         // after sending a tx request, we expect a status response
         // wait up to half second for the status response
@@ -824,21 +840,16 @@ void radioSendBatt(int vcc) {
                         // get the delivery status, the fifth byte
                         if (zbResponse.getDeliveryStatus() == SUCCESS) {
                                 // success.  time to celebrate
-                                flashLed(button0LEDPin, 5, 50);
                         } else {
                                 // the remote XBee did not receive our packet. is it powered on?
-                                flashLed(button1LEDPin, 3, 1000);
                         }
                 } else {
-                        flashLed(button1LEDPin, 8, 100);
                 }
         } else if (xbee.getResponse().isError()) {
                 //nss.print("Error reading packet.  Error code: ");
                 //nss.println(xbee.getResponse().getErrorCode());
-                flashLed(button1LEDPin, 4, 50);
         } else {
                 // local XBee did not provide a timely TX Status Response -- should not happen
-                flashLed(button1LEDPin, 2, 50);
         }
 }
 
@@ -859,8 +870,6 @@ void radioSendGreet() {
         xbee.send(zbRequest);
 
 
-        // flash TX indicator
-        flashLed(button0LEDPin, 1, 100);
 
         // after sending a tx request, we expect a status response
         // wait up to half second for the status response
@@ -874,21 +883,16 @@ void radioSendGreet() {
                         // get the delivery status, the fifth byte
                         if (zbResponse.getDeliveryStatus() == SUCCESS) {
                                 // success.  time to celebrate
-                                flashLed(button0LEDPin, 5, 50);
                         } else {
                                 // the remote XBee did not receive our packet. is it powered on?
-                                flashLed(button1LEDPin, 3, 1000);
                         }
                 } else {
-                        flashLed(button1LEDPin, 8, 100);
                 }
         } else if (xbee.getResponse().isError()) {
                 //nss.print("Error reading packet.  Error code: ");
                 //nss.println(xbee.getResponse().getErrorCode());
-                flashLed(button1LEDPin, 4, 50);
         } else {
                 // local XBee did not provide a timely TX Status Response -- should not happen
-                flashLed(button1LEDPin, 2, 50);
         }
 
 }
@@ -1047,11 +1051,9 @@ void runPhase1() {
                         xbee.getResponse().getZBRxResponse(rx);
 
                         if (rx.getOption() == ZB_PACKET_ACKNOWLEDGED) {
-                                flashLed(statusLed, 10, 10);
                         }
 
                         else {
-                                flashLed(errorLed, 2, 20);
                         }
 
                         // interpret the orders.
@@ -1152,7 +1154,6 @@ void runPhase2() {
  *
  */
 void runPhase3() {
-        flashLed(statusLed, 3, 50);
 }
 
 void runPhase4() {
@@ -1196,17 +1197,14 @@ void runPhase7() {
 
         if (team0Button.wasPressed() ||
             team1Button.wasPressed()) {
-                flashLed(buzzerPin, 1, 100);
         }
 
         else if (team0Button.wasPressed() ||
                  team1Button.wasPressed()) {
-                flashLed(buzzerPin, 2, 100);
         }
 
         // else if (team0Button.getState() == 3 ||
         //          team1Button.getState() == 3) {
-        //         flashLed(buzzerPin, 3, 100);
         // }
 
         delay(300);
@@ -1239,12 +1237,10 @@ void runPhase9() {
         }
         if (team0Button.wasPressed() ||
             team1Button.wasPressed()) {
-                flashLed(buzzerPin, 1, 100);
         }
 
         else if (team0Button.wasReleased() ||
                  team1Button.wasReleased()) {
-                flashLed(buzzerPin, 3, 100);
         }
 
         delay(300);
@@ -1350,21 +1346,36 @@ void runPhase20() {
 
 
 /**
- * Dumb mode (no local state-- DooM HQ handles it)
+ * Sector Control dumb mode (minimal local state-- DooM HQ handles it)
  */
 void runPhase25() {
 
+        // Blink the button LEDS on and off every second
+        if (millis() - lastPhase25Check > 1000) {
+                if (isLit) {
+                        digitalWrite(button0LEDPin, HIGH);
+                        digitalWrite(button1LEDPin, LOW);
+                        isLit = 0;
+                }
+                else {
+                        digitalWrite(button0LEDPin, LOW);
+                        digitalWrite(button1LEDPin, HIGH);
+                        isLit = 1;
+                }
+                lastPhase25Check = millis();
+        }
+
         // If button is pressed or released, send event to gameserver
-        if (team0Button.wasPressed()) {
+        if (team0Button.wasPressed() && team1Button.isReleased()) {
                 radioSendPress(RED);
         }
-        else if (team1Button.wasPressed()) {
+        else if (team1Button.wasPressed() && team0Button.isReleased()) {
                 radioSendPress(BLU);
         }
-        else if (team0Button.wasReleased()) {
+        else if (team0Button.wasReleased() && team1Button.isReleased()) {
                 radioSendRelease(RED);
         }
-        else if (team1Button.wasReleased()) {
+        else if (team1Button.wasReleased() && team0Button.isReleased()) {
                 radioSendRelease(BLU);
         }
 
@@ -1379,11 +1390,9 @@ void runPhase25() {
                         xbee.getResponse().getZBRxResponse(rx);
 
                         if (rx.getOption() == ZB_PACKET_ACKNOWLEDGED) {
-                                flashLed(statusLed, 10, 10);
                         }
 
                         else {
-                                flashLed(errorLed, 2, 20);
                         }
 
 
@@ -1406,13 +1415,15 @@ void runPhase25() {
                                 rx.getData(0) == 'D' &&
                                 rx.getData(1) == 'C' &&
                                 rx.getData(2) == 'X' &&
-                                rx.getData(3) == 'S' &&
-                                rx.getData(4) == 'T' &&
-                                rx.getData(5) == 'E'
+                                rx.getData(3) == 'L' &&
+                                rx.getData(4) == 'E' &&
+                                rx.getData(5) == 'D'
                                 )
                         {
-                                // DCXSTE means we are getting a state report
-                                phase = 2;
+                                // DCXLED means we are getting a LED pattern command
+                                // set the team (6) to percentage (7);
+                                uint16_t percentage = (rx.getData(7)<<8) | rx.getData(8);
+                                setProgressBar(rx.getData(6), percentage);
                         }
                 }
         }
@@ -1431,11 +1442,9 @@ void radioCheckIn() {
                         xbee.getResponse().getZBRxResponse(rx);
 
                         if (rx.getOption() == ZB_PACKET_ACKNOWLEDGED) {
-                                flashLed(statusLed, 10, 10);
                         }
 
                         else {
-                                flashLed(errorLed, 2, 20);
                         }
 
                         // interpret the orders.
@@ -1470,8 +1479,7 @@ void radioCheckIn() {
                                 rx.getData(4) == 'C'
                                 )
                         {
-                                // DCXDC means go to BATT check phase (it returns afterwards)
-                                lastPhase = 1;
+                                // DCXDC means go to BATT check phase
                                 phase = 8;
                         }
 
@@ -1503,8 +1511,6 @@ void loop()
         team0Button.read();
         team1Button.read();
 
-        // check radio for commands
-        radioCheckIn();
 
         if (phase == 0) {
                 runPhase0();
