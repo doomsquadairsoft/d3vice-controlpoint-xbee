@@ -3,7 +3,7 @@
 Number - Description - LED Color
 
 Phase 0 - Test Phase - Red
-Phase 1 - Hello Phase - Green
+Phase 1 - Hello Phase - Yellow chase
 Phase 2 - Game mode select - Blue
 Phase 3 - Domination select TTW - Poop Green
 Phase 4 - Domination running - Various

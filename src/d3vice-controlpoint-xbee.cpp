@@ -97,6 +97,7 @@ uint8_t breathState = 0;
 float sinIn = 4.712;
 bool isInhale = 0;
 bool isLit = 0;
+uint16_t scannerPosition = 0;
 
 
 /**
@@ -111,8 +112,8 @@ int lastPhase = 1;
  */
 unsigned long lastBroadcastHoldEvent = 0;
 unsigned long lastStandbyTime = 0;
+unsigned long lastAnimationTime = 0;
 unsigned long lastXEvent = 0;
-unsigned long lastStrobeTime = 0;
 unsigned long timeToCapture = 5000; // the time it takes to capture a point.
 unsigned long lastPhase19Check = 250;
 unsigned long lastPhase25Check = 250;
@@ -178,17 +179,12 @@ uint32_t gryColorBlinding = strip.Color(50, 50, 50);
 uint32_t redColorDim = strip.Color(85, 0, 0);
 uint32_t bluColorDim = strip.Color(0, 0, 85);
 uint32_t gryColorDim = strip.Color(17, 17, 17);
-
-
-
-
-
+uint32_t ylwColorDim = strip.Color(20, 20, 0);
+uint32_t blkColorOff = strip.Color(0, 0, 0);
 
 
 
 void setup() {
-
-
         pinMode(onboardLEDPin, OUTPUT);
         pinMode(button0LEDPin, OUTPUT);
         pinMode(button1LEDPin, OUTPUT);
@@ -221,8 +217,6 @@ void setup() {
   #else
         ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
   #endif
-
-
 }
 
 
@@ -230,15 +224,10 @@ void setup() {
 
 
 
-
-
-
-
-
-void setProgressBar(bool teamNumber, int percentage) {
+void setProgressBar(bool teamNumber, uint16_t percentage) {
         // determine how many pixels to turn on
-        int split = (100 / strip.numPixels());
-        int numberOfNeopixelsToLight = (percentage / split);
+        uint16_t split = (100 / strip.numPixels());
+        uint16_t numberOfNeopixelsToLight = (percentage / split);
 
         // clear all neopixels
         for(uint16_t i=0; i<strip.numPixels(); i++) {
@@ -246,12 +235,17 @@ void setProgressBar(bool teamNumber, int percentage) {
         }
 
         // light up the necessary neopixels
-        for(uint16_t i=0; i<numberOfNeopixelsToLight; i++) {
-                if (teamNumber == 0) {
-                        strip.setPixelColor(i, redColorDim);
+        if (!teamNumber) {
+                // red goes right to left
+                for(uint16_t i=0; i<numberOfNeopixelsToLight-1; i++) {
+                        strip.setPixelColor(i, strip.Color(20, 0, 0));
                 }
-                else {
-                        strip.setPixelColor(i, bluColorDim);
+        } else {
+                // blu goes left to right
+                // teh bug is here vvvv
+                uint16_t endPixel = strip.numPixels()-numberOfNeopixelsToLight;
+                for(uint16_t i=strip.numPixels(); i>endPixel; i--) {
+                        strip.setPixelColor(i, strip.Color(0, 0, 20));
                 }
         }
         strip.show();
@@ -917,15 +911,15 @@ void radioGreet() {
 
 
 void strobeLed() {
-        if (millis() - lastStrobeTime >= 5000) {
+        if (millis() - lastAnimationTime >= 5000) {
                 for(uint16_t i=0; i<strip.numPixels(); i++) {
                         strip.setPixelColor(i, strip.Color(84, 62, 0));
                 }
                 strip.show();
-                lastStrobeTime = millis();
+                lastAnimationTime = millis();
         }
 
-        if (millis() - lastStrobeTime >= 50) {
+        if (millis() - lastAnimationTime >= 50) {
                 for(uint16_t i=0; i<strip.numPixels(); i++) {
                         strip.setPixelColor(i, strip.Color(0, 0, 0));
                 }
@@ -964,6 +958,31 @@ void breatheLed() {
 }
 
 
+
+void animationScanner() {
+        // run animation tick no more than every 50 ms
+        if (millis() - lastAnimationTime >= 50) {
+                // all pixels off
+                for(uint16_t i=0; i<strip.numPixels(); i++) {
+                        strip.setPixelColor(i, blkColorOff);
+                }
+
+                // on pixel on
+                strip.setPixelColor(scannerPosition, ylwColorDim);
+                strip.show();
+
+                // update next pixel positoin
+                if (scannerPosition == strip.numPixels()) {
+                        scannerPosition = 0;
+                }
+                else {
+                        scannerPosition += 1;
+                }
+
+                // reset animation timer
+                lastAnimationTime = millis();
+        }
+}
 
 
 
@@ -1004,6 +1023,30 @@ void testSequence() {
 
         delay(50);
 
+
+        setProgressBar(0, 0);
+        delay(250);
+        setProgressBar(1, 25);
+        delay(250);
+        setProgressBar(0, 50);
+        delay(250);
+        setProgressBar(1, 100);
+        delay(250);
+        setProgressBar(0, 0);
+        delay(250);
+        setProgressBar(1, 25);
+        delay(250);
+        setProgressBar(0, 50);
+        delay(250);
+        setProgressBar(1, 100);
+        delay(250);
+        setProgressBar(0, 75);
+        delay(250);
+        setProgressBar(1, 75);
+        delay(250);
+        setProgressBar(0, 0); // turn all neopixels off
+
+
         // beep the buzzer
         digitalWrite(buzzerPin, HIGH);
         digitalWrite(onboardLEDPin, HIGH);
@@ -1034,6 +1077,8 @@ void runPhase0() {
  * Send HI until a gateway tells us what to do
  */
 void runPhase1() {
+
+        animationScanner();
 
         /**
          * Send a HELLO
@@ -1309,14 +1354,14 @@ void runPhase19() {
 
                 // if no button is pressed, do stuff
                 else {
-                        if (lastControllingTeam == BLU && redProgress < 255 ||
-                            lastCappingTeam == RED && redProgress < 255
+                        if ((lastControllingTeam == BLU && redProgress < 255) ||
+                            (lastCappingTeam == RED && redProgress < 255)
                             ) {
                                 decrementRedProgress();
                         }
 
-                        else if (lastControllingTeam == RED && bluProgress < 255 ||
-                                 lastCappingTeam == BLU && bluProgress < 255
+                        else if ((lastControllingTeam == RED && bluProgress < 255) ||
+                                 (lastCappingTeam == BLU && bluProgress < 255)
                                  ) {
                                 decrementBluProgress();
                         }
@@ -1422,8 +1467,12 @@ void runPhase25() {
                         {
                                 // DCXLED means we are getting a LED pattern command
                                 // set the team (6) to percentage (7);
-                                uint16_t percentage = (rx.getData(7)<<8) | rx.getData(8);
-                                setProgressBar(rx.getData(6), percentage);
+                                // example: rx.getData(7) => 0x06, rx.getData(8) => 0x04;
+                                // concat 6 and 4 to make 64 (Dec:100) (100 percent)
+                                // uint16_t percentage = (rx.getData(7)<<4) | rx.getData(8);
+                                bool teamNumber = rx.getData(6);
+                                uint8_t percentage = rx.getData(7);
+                                setProgressBar(teamNumber, percentage);
                         }
                 }
         }
